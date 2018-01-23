@@ -39,9 +39,12 @@ def send_message(text, chat_id):
 
 
 def allTogether():
-    threading.Timer(3.0, allTogether).start()
+    print("Enter allTogether part")
+    threading.Timer(5.0, allTogether).start()
     text, chat = get_last_chat_id_and_text(get_updates())
-    send_message(text, chat)
+    if chat:
+        send_message(text, chat)
 
-
-allTogether()
+def handleUpdate(update):
+    chat_id = update["message"]["chat"]["id"]
+    send_message(update, chat_id)
