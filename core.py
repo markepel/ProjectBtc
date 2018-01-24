@@ -45,6 +45,9 @@ def allTogether():
     if chat:
         send_message(text, chat)
 
+def new():
+    return ''
+
 def handleUpdate(update):
     chat_id = update["message"]["chat"]["id"]
     send_message(update, chat_id)
