@@ -13,6 +13,7 @@ logging.basicConfig(level=logging.DEBUG,
 
 
 TOKEN = config.TOKEN
+SVRURL = config.SVRURL
 bot = telegram.Bot(token=TOKEN)
 updater = Updater(token=TOKEN)
 dispatcher = updater.dispatcher
@@ -35,4 +36,9 @@ dispatcher.add_handler(info_handler)
 
 
 
-updater.start_polling()
+#updater.start_polling()
+
+updater.start_webhook(listen="0.0.0.0",
+                       port=443,
+                       url_path=TOKEN)
+updater.bot.setWebhook(SVRURL + TOKEN)
