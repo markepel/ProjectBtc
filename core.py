@@ -26,7 +26,11 @@ def info(bot, update):
     reply_keyboard = [['Стратегии'], ['Обучение','О боте'], ['Настройки', 'Личный кабинет']]
     bot.send_message(chat_id=update.message.chat_id, text="Info clicked. Enjoy info!", reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
 
-
+def handleUpdate()
+{
+    updater.start_webhook(listen="0.0.0.0", port=443, url_path=TOKEN)
+    updater.bot.setWebhook(SVRURL + TOKEN)
+}
 
 
 start_handler = CommandHandler('start', start)
@@ -38,7 +42,3 @@ dispatcher.add_handler(info_handler)
 
 #updater.start_polling()
 
-updater.start_webhook(listen="0.0.0.0",
-                       port=443,
-                       url_path=TOKEN)
-updater.bot.setWebhook(SVRURL + TOKEN)
