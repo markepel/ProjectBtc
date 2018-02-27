@@ -1,6 +1,6 @@
 import telegram
 from telegram.ext import (CommandHandler,MessageHandler,RegexHandler,Filters)
-from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
+from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove, InlineKeyboardButton, InlineKeyboardMarkup)
 import logging
 from dbrepo import DBRepo
 import botconfig as config
@@ -41,11 +41,9 @@ def contacts(bot, update):
 
 def strategy(bot, update):
   db = DBRepo()
-  print('==============Text ', update.message.text)
-  print('--------------dbObj', db.get_strategy_by_name(update.message.text)[0])
   strategyItself = Strategy.fromDbObject(db.get_strategy_by_name(update.message.text)[0])
-  print('==============SSSS ', strategyItself)
-  bot.send_message(chat_id=update.message.chat_id, text=strategyItself.description, reply_markup=ReplyKeyboardMarkup(reply_keyboard_strategies, one_time_keyboard=True))
+  keyboard = [[InlineKeyboardButton('Купить данную стратегию за ' + str(strategyItself.price) + '₽', callback_data='buy-s_name='+strategyItself.name, url = 'https://github.com/python-telegram-bot/python-telegram-bot/blob/master/examples/inlinekeyboard.py')]]
+  bot.send_message(chat_id=update.message.chat_id, text=strategyItself.description, reply_markup=InlineKeyboardMarkup(keyboard))
 
 
 def backToMainMenu(bot, update):
