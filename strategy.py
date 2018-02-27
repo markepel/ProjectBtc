@@ -1,13 +1,6 @@
 import datetime
 
 class Strategy:
-  name = ""
-  description = ""
-  price = 0
-  rightAwayLink = ""
-  delayLinks = []
-  dateOfCreation = datetime.datetime.min
-
   def set_name(self, name):
     self.name = name
 
@@ -19,6 +12,9 @@ class Strategy:
 
   def set_rightAwayLink(self, rightAwayLink):
     self.rightAwayLink = rightAwayLink
+
+  def set_creationTimeReset(self):
+    self.dateOfCreation = datetime.datetime.now()
 
   def add_delayLink(self, delayLink):
     self.delayLinks.append(delayLink)
