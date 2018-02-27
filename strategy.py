@@ -33,4 +33,4 @@ class Strategy:
     self.price = price
     self.rightAwayLink = rightAwayLink
     self.delayLinks = delayLinks
-    dateOfCreation = datetime.datetime.now()
+    self.dateOfCreation = datetime.datetime.now()

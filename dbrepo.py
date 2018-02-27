@@ -6,7 +6,7 @@ class DBRepo:
   def __init__(self, dbname="probtc.db"):
     self.dbname = dbname
     self.conn = sqlite3.connect(dbname)
-    self.cursor = selfself.conn.cursor()
+    self.cursor = self.conn.cursor()
 
   def add_strategy(self, name, description, price, rightawayLink, dateOfCreation):
     dateOfCreationUnix = (dateOfCreation - datetime.datetime(1970,1,1)).total_seconds()

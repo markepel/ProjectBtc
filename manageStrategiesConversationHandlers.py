@@ -52,7 +52,7 @@ def link(bot, update):
     db = DBRepo()
     addedStrategyId = db.add_strategy(strategyToAdd.name, strategyToAdd.description, strategyToAdd.price, strategyToAdd.rightAwayLink, strategyToAdd.dateOfCreation)
     for delayLink in strategyToAdd.delayLinks:
-      db.add_strategy_link(addedStrategyId, delayLink[0], delayLink[1])
+      db.add_strategy_link(addedStrategyId, delayLink[1], delayLink[0])
     bot.send_message(chat_id=update.message.chat_id, text="Стратегия успешно добавлена!", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main, one_time_keyboard=True))
     return ConversationHandler.END
   else:
