@@ -1,4 +1,22 @@
+import botconfig as config
+
 class Texts:
+  @staticmethod
+  def generatePaymentButtonForStrategy(strategyId, strategyName, chatId, amountToPay):
+    orderId = "cid_" + str(chatId) + "_" + "stid_" + str(strategyId)
+    return Texts.generatePaymentButton(strategyName, orderId, amountToPay)
+
+  @staticmethod
+  def generatePaymentButtonForSignals(chatId, amountToPay):
+    orderId = "cid_" + str(chatId)
+    return Text.sgeneratePaymentButton("Сигналы", orderId, amountToPay)
+
+  @staticmethod
+  def generatePaymentButton(name, orderId, amountToPay):
+    buttonText = config.PAYMENTBUTTONURL
+    buttonText = buttonText.replace("name=", "name=" + name).replace("order_id=", "order_id=" + orderId).replace("amount=","amount=" + str(amountToPay))
+    return buttonText
+
   @staticmethod
   def getTextOnStart(firstName):
     name = "."

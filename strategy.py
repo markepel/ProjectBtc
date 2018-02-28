@@ -14,10 +14,13 @@ class Strategy:
     self.rightAwayLink = rightAwayLink
 
   def set_creationTimeReset(self):
-    self.dateOfCreation = datetime.datetime.now()
+    self.dateOfCreation = datetime.datetime.utcnow()
 
   def set_creationTime(self, newTime):
     self.dateOfCreation = newTime
+
+  def set_id(self, id):
+    self.id = id
 
   def add_delayLink(self, delayLink):
     self.delayLinks.append(delayLink)
@@ -30,6 +33,7 @@ class Strategy:
   def fromDbObject(cls, dbObject):
     res = cls(dbObject[1], dbObject[2], dbObject[3], dbObject[4], []) 
     res.set_creationTime(datetime.datetime.fromtimestamp(dbObject[5]))
+    res.set_id(dbObject[0])
     return res
 
   def __init__(self, name, description, price, rightAwayLink, delayLinks):
@@ -38,4 +42,4 @@ class Strategy:
     self.price = price
     self.rightAwayLink = rightAwayLink
     self.delayLinks = delayLinks
-    self.dateOfCreation = datetime.datetime.now()
+    self.dateOfCreation = datetime.datetime.utcnow()

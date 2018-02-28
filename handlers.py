@@ -18,8 +18,8 @@ reply_keyboard_strategies = Menus.generateStrategiesMenu()
 db = DBRepo()
 db.setup()
 strategyNamesRegex = Texts.generateRegexForStrategies(db.get_all_strategies_names())
-print('============', strategyNamesRegex)
 goBackTo = 'start'
+
 
 def start(bot, update):
   bot.send_message(chat_id=update.message.chat_id, text=Texts.getTextOnStart(update.message.from_user.first_name), reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
@@ -42,7 +42,7 @@ def contacts(bot, update):
 def strategy(bot, update):
   db = DBRepo()
   strategyItself = Strategy.fromDbObject(db.get_strategy_by_name(update.message.text)[0])
-  keyboard = [[InlineKeyboardButton('Купить данную стратегию за ' + str(strategyItself.price) + '₽', callback_data='buy-s_name='+strategyItself.name, url = 'https://github.com/python-telegram-bot/python-telegram-bot/blob/master/examples/inlinekeyboard.py')]]
+  keyboard = [[InlineKeyboardButton('Купить данную стратегию за ' + str(strategyItself.price) + '₽', callback_data='buy-s_name=' + strategyItself.name, url = Texts.generatePaymentButtonForStrategy(strategyItself.id, strategyItself.name, update.message.chat_id, strategyItself.price))]]
   bot.send_message(chat_id=update.message.chat_id, text=strategyItself.description, reply_markup=InlineKeyboardMarkup(keyboard))
 
 
