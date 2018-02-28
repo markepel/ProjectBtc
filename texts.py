@@ -73,7 +73,10 @@ class Texts:
 
   @staticmethod
   def generateRegexForStrategies(strategyNames):
-    regex = strategyNames[0]
-    for name in strategyNames[1:]:
-      regex += ('|' + name)
-    return regex
+    if len(strategyNames)>0:
+      regex = strategyNames[0]
+      for name in strategyNames[1:]:
+        regex += ('|' + name)
+      return regex
+    else:
+      return 'No strategies'

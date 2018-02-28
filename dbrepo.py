@@ -4,7 +4,7 @@ from strategy import Strategy
 
 
 class DBRepo:
-  def __init__(self, dbname="probtc.db"):
+  def __init__(self, dbname="/var/www/ProBtc/probtc.db"):
     self.dbname = dbname
     self.conn = sqlite3.connect(dbname)
     self.cursor = self.conn.cursor()

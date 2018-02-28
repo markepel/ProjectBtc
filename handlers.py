@@ -11,12 +11,11 @@ from strategy import Strategy
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
+db = DBRepo()
+db.setup()
 handlers = []
 reply_keyboard_main_menu = [['Стратегии'], ['Сигналы'], ['Материалы','Служба поддержки'], ['Личный кабинет']]
 reply_keyboard_strategies = Menus.generateStrategiesMenu()
-db = DBRepo()
-db.setup()
 strategyNamesRegex = Texts.generateRegexForStrategies(db.get_all_strategies_names())
 goBackTo = 'start'
 
