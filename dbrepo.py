@@ -1,10 +1,10 @@
 import sqlite3
 import datetime
 from strategy import Strategy
-
+import botconfig as config
 
 class DBRepo:
-  def __init__(self, dbname="/var/www/ProBtc/probtc.db"):
+  def __init__(self, dbname = config.DBNAME):
     self.dbname = dbname
     self.conn = sqlite3.connect(dbname)
     self.cursor = self.conn.cursor()
