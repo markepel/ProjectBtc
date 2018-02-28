@@ -1,3 +1,6 @@
+botserver.wsgi
+webhook_cert.pem
+webhook_pkey.key
 botconfig.py
 probtc.db
 probtc.db-journal
