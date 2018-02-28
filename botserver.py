@@ -2,6 +2,7 @@ from flask import Flask,request
 import botconfig as config
 import telegram
 from handlers import setHandlers
+import sys
 
 TOKEN = config.TOKEN
 HOST = config.HOST
@@ -20,6 +21,12 @@ app = Flask(__name__)
 def webhook():
   update = telegram.update.Update.de_json(request.get_json(force=True),bot)
   dp.process_update(update)
+  return ''
+
+@app.route('/invoice', methods=["POST", "GET"])
+def invoice():
+  print('----Invoice status----', request.form['invoice_status'])
+  print('=========New Invoice Form===========', request.form)
   return ''
 
 if __name__ == '__main__':
