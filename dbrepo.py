@@ -9,9 +9,6 @@ class DBRepo:
     self.conn = sqlite3.connect(dbname)
     self.cursor = self.conn.cursor()
 
-  def __del__(self):
-    self.conn.close()
-
   def add_strategy(self, name, description, price, rightawayLink):
     dateOfCreationUnix = (datetime.datetime.utcnow() - datetime.datetime(1970,1,1)).total_seconds()
     stmt = "INSERT INTO strategies (name , description, price, rightaway_link, date_of_creation) VALUES (?, ?, ?, ?, ?)"

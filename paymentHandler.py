@@ -33,7 +33,7 @@ def handlePayment(invoiceData):
 
         strategyThatWasBought = Strategy.fromDbObject(db.get_strategy_by_id(invoiceForData['strategyId'])[0]) 
         amountHadToBePaid = strategyThatWasBought.price
-        if int(amount) >= int(amountHadToBePaid):
+        if int(float(amount)) >= int(float(amountHadToBePaid)):
           print('Adding subscription to strategy')
           db.add_subscription_for_strategy(invoiceForData['chatId'], invoiceForData['strategyId'])
           messageToSend = Texts.getTextForSubscriptionForStrategy(strategyThatWasBought.name)
@@ -42,7 +42,7 @@ def handlePayment(invoiceData):
 
       else: 
 
-        if int(amount) >= int(config.SUBSCRIPTIONFORSIGNALSPRICE):
+        if int(float(amount)) >= int(float(config.SUBSCRIPTIONFORSIGNALSPRICE)):
           print('Adding subscription to signals'.format(status))
           db.add_subscription_for_signals(invoiceForData['chatId'])
           messageToSend = Texts.getTextForSubscriptionForSignals()
