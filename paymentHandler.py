@@ -19,21 +19,21 @@ def handlePayment(invoiceData):
   print('status = {0}'.format(status))
   amount = invoiceData['invoice_amount']
   print('amount = {0}'.format(amount))
-  #invoiceForData = getInvoiceForData(invoiceData['order_id'])  {'chatId': chatId}
-  invoiceForData = {'chatId': 111384340, 'strategyId': 7}
+  invoiceForData = getInvoiceForData(invoiceData['order_id'])
+  #invoiceForData = {'chatId': 111384340, 'strategyId': 7}
   print('invoiceForData = {0}'.format(invoiceForData))
   messageToSend = ""
   paymentIsValid = checkPaymentValidity(invoiceData)
 
   if paymentIsValid:
+    db = DBRepo()
     if status == 'paid':
-      db = DBRepo()
 
       if strategyWasBought(invoiceForData):  
 
         strategyThatWasBought = Strategy.fromDbObject(db.get_strategy_by_id(invoiceForData['strategyId'])[0]) 
         amountHadToBePaid = strategyThatWasBought.price
-        if int(float(amount)) >= int(amountHadToBePaid):
+        if int(amount) >= int(amountHadToBePaid):
           print('Adding subscription to strategy')
           db.add_subscription_for_strategy(invoiceForData['chatId'], invoiceForData['strategyId'])
           messageToSend = Texts.getTextForSubscriptionForStrategy(strategyThatWasBought.name)
@@ -42,15 +42,20 @@ def handlePayment(invoiceData):
 
       else: 
 
-        if int(float(amount)) >= int(config.SUBSCRIPTIONFORSIGNALSPRICE):
+        if int(amount) >= int(config.SUBSCRIPTIONFORSIGNALSPRICE):
           print('Adding subscription to signals'.format(status))
           db.add_subscription_for_signals(invoiceForData['chatId'])
           messageToSend = Texts.getTextForSubscriptionForSignals()
         else:
           messageToSend = "Сумма оплаты меньше суммы заказа. Стоимость - {0}, оплачено - {1}. Обратитесь в службу поддержки.".format(config.SUBSCRIPTIONFORSIGNALSPRICE, amount)
 
-    else:
+    elif status == 'cancelled' or status == 'mispaid':
       messageToSend = "Статус транзакции - {0}. Подписка не оформлена.".format(status)
+      if strategyWasBought(invoiceForData): 
+        db.delete_subscription_for_strategy(invoiceForData['chatId'], invoiceForData['strategyId'])       
+      else:
+        db.delete_subscription_for_signals(invoiceForData['chatId'])
+
   else:
     messageToSend = "Оплата недействительна. Обратитесь в службу поддержки."
 

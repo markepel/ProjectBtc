@@ -86,6 +86,18 @@ class DBRepo:
     res =self.conn.execute(stmt, args)
     self.conn.commit()
 
+  def delete_subscription_for_strategy(self, userId, strategyId):
+    stmt = "DELETE FROM subscriptions_for_strategies WHERE u_id = (?) AND s_id = (?)"
+    args = (userId, strategyId)
+    self.conn.execute(stmt, args)
+    self.conn.commit()
+
+  def delete_subscription_for_signals(self, userId):
+    stmt = "DELETE FROM subscriptions_for_signals WHERE u_id = (?)"
+    args = (userId, )
+    self.conn.execute(stmt, args)
+    self.conn.commit()
+
   def get_active_subscriptions_for_strategies_by_user_id(self, userId):
     validDateOfPurchase = (datetime.datetime.utcnow() - datetime.datetime(1970,1,1)).total_seconds() - config.MONTHINSECONDS
     stmt = "SELECT * FROM subscriptions_for_strategies WHERE u_id = (?) AND date_of_purchase > (?)"

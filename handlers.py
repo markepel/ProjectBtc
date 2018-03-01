@@ -25,10 +25,13 @@ goBackTo = 'start'
 def start(bot, update):
   bot.send_message(chat_id=update.message.chat_id, text=Texts.getTextOnStart(update.message.from_user.first_name), reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
   #bot.send_photo(chat_id=update.message.chat_id, photo='https://www.iconexperience.com/_img/o_collection_png/green_dark_grey/256x256/plain/dog.png')
+
 def profile(bot, update):
   bot.send_message(chat_id=update.message.chat_id, text="Это личный кабинет!", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True))
+
 def signals(bot, update):
-  bot.send_message(chat_id=update.message.chat_id, text="Это сигналы!", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True))
+  keyboard = [[InlineKeyboardButton('Купить подписку на сигналы за ' + str(config.SUBSCRIPTIONFORSIGNALSPRICE) + '₽', callback_data='buy-signals', url = Texts.generatePaymentButtonForSignals(update.message.chat_id, config.SUBSCRIPTIONFORSIGNALSPRICE))]]
+  bot.send_message(chat_id=update.message.chat_id, text=Texts.getTextForSignals(), reply_markup=InlineKeyboardMarkup(keyboard))
 
 def strategies(bot, update):
   bot.send_message(chat_id=update.message.chat_id, text=Texts.getTextForStrategies(), reply_markup=ReplyKeyboardMarkup(reply_keyboard_strategies, one_time_keyboard=True))
@@ -44,11 +47,6 @@ def strategy(bot, update):
   strategyItself = Strategy.fromDbObject(db.get_strategy_by_name(update.message.text)[0])
   keyboard = [[InlineKeyboardButton('Купить данную стратегию за ' + str(strategyItself.price) + '₽', callback_data='buy-s_name=' + strategyItself.name, url = Texts.generatePaymentButtonForStrategy(strategyItself.id, strategyItself.name, update.message.chat_id, strategyItself.price))]]
   bot.send_message(chat_id=update.message.chat_id, text=strategyItself.description, reply_markup=InlineKeyboardMarkup(keyboard))
-
-def getAllStrategiesInfo(bot, update):
-  db = DBRepo()
-  bot.send_message(chat_id=update.message.chat_id, text=db.get_all_strategies(), reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True))
-  
 
 def paymentCheck(bot, update):
   inputInvoiceData = ImmutableMultiDict([
@@ -88,7 +86,6 @@ def setHandlers(dp):
   handlers.append(get_addstrategy_conv_handler())
   handlers.append(RegexHandler(strategyNamesRegex, strategy))
   handlers.append(CommandHandler('testpayment', paymentCheck))
-  handlers.append(CommandHandler('requestAllStrategies', getAllStrategiesInfo))
 
   for handler in handlers:
   	dp.add_handler(handler)
