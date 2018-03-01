@@ -45,6 +45,10 @@ def strategy(bot, update):
   keyboard = [[InlineKeyboardButton('Купить данную стратегию за ' + str(strategyItself.price) + '₽', callback_data='buy-s_name=' + strategyItself.name, url = Texts.generatePaymentButtonForStrategy(strategyItself.id, strategyItself.name, update.message.chat_id, strategyItself.price))]]
   bot.send_message(chat_id=update.message.chat_id, text=strategyItself.description, reply_markup=InlineKeyboardMarkup(keyboard))
 
+def getAllStrategiesInfo(bot, update):
+  db = DBRepo()
+  bot.send_message(chat_id=update.message.chat_id, text=db.get_all_strategies(), reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True))
+  
 
 def paymentCheck(bot, update):
   inputInvoiceData = ImmutableMultiDict([
@@ -84,6 +88,7 @@ def setHandlers(dp):
   handlers.append(get_addstrategy_conv_handler())
   handlers.append(RegexHandler(strategyNamesRegex, strategy))
   handlers.append(CommandHandler('testpayment', paymentCheck))
+  handlers.append(CommandHandler('requestAllStrategies', getAllStrategiesInfo))
 
   for handler in handlers:
   	dp.add_handler(handler)
