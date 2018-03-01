@@ -12,8 +12,8 @@ class DBRepo:
   def __del__(self):
     self.conn.close()
 
-  def add_strategy(self, name, description, price, rightawayLink, dateOfCreation):
-    dateOfCreationUnix = (dateOfCreation - datetime.datetime(1970,1,1)).total_seconds()
+  def add_strategy(self, name, description, price, rightawayLink):
+    dateOfCreationUnix = (datetime.datetime.utcnow() - datetime.datetime(1970,1,1)).total_seconds()
     stmt = "INSERT INTO strategies (name , description, price, rightaway_link, date_of_creation) VALUES (?, ?, ?, ?, ?)"
     args = (name, description, price, rightawayLink, dateOfCreationUnix)
     self.cursor.execute(stmt, args)
@@ -54,7 +54,7 @@ class DBRepo:
     return [x[1] for x in res]
 
   def add_subscriber(self, id, first_name, last_name,):
-    command = "INSERT INTO subscribers (id, first_name, last_name) VALUES (?, ?, ?)"
+    stmt = "INSERT INTO subscribers (id, first_name, last_name) VALUES (?, ?, ?)"
     args = (id, first_name, last_name)
     res =self.conn.execute(stmt, args)
     self.conn.commit()
@@ -72,16 +72,32 @@ class DBRepo:
     self.conn.commit()
     return [x for x in res]
 
-  def add_subscription_for_strategy(self, userId, strategyId, receivingTime, dateOfPurchase):
-    dateOfPurchaseUnix = (dateOfPurchase - datetime.datetime(1970,1,1)).total_seconds()
-    command = "INSERT INTO subscriptions_for_strategies (u_id, s_id, receiving_time, is_active, date_of_purchase) VALUES (?, ?, ?, ?, ?)"
-    args = (userId, strategyId, receivingTime, 1,  dateOfPurchaseUnix)
+  def add_subscription_for_strategy(self, userId, strategyId):
+    dateOfPurchaseUnix = (datetime.datetime.utcnow() - datetime.datetime(1970,1,1)).total_seconds()
+    stmt = "INSERT INTO subscriptions_for_strategies (u_id, s_id, receiving_time, is_active, date_of_purchase) VALUES (?, ?, ?, ?, ?)"
+    args = (userId, strategyId, 0, 1,  dateOfPurchaseUnix)
+    res =self.conn.execute(stmt, args)
+    self.conn.commit()
+
+  def add_subscription_for_signals(self, userId):
+    dateOfPurchaseUnix = (datetime.datetime.utcnow() - datetime.datetime(1970,1,1)).total_seconds()
+    stmt = "INSERT INTO subscriptions_for_signals (u_id, date_of_purchase) VALUES (?, ?)"
+    args = (userId, dateOfPurchaseUnix)
     res =self.conn.execute(stmt, args)
     self.conn.commit()
 
   def get_active_subscriptions_for_strategies_by_user_id(self, userId):
-    stmt = "SELECT * FROM subscriptions_for_strategies WHERE u_id = (?) AND is_active = 1"
-    args = (userId, )
+    validDateOfPurchase = (datetime.datetime.utcnow() - datetime.datetime(1970,1,1)).total_seconds() - config.MONTHINSECONDS
+    stmt = "SELECT * FROM subscriptions_for_strategies WHERE u_id = (?) AND date_of_purchase > (?)"
+    args = (userId, validDateOfPurchase)
+    res = self.conn.execute(stmt, args)
+    self.conn.commit()
+    return [x for x in res]
+
+  def get_active_subscriptions_for_signals_by_user_id(self, userId):
+    validDateOfPurchase = (datetime.datetime.utcnow() - datetime.datetime(1970,1,1)).total_seconds() - config.MONTHINSECONDS
+    stmt = "SELECT * FROM subscriptions_for_signals WHERE u_id = (?) AND date_of_purchase > (?)"
+    args = (userId, validDateOfPurchase)
     res = self.conn.execute(stmt, args)
     self.conn.commit()
     return [x for x in res]
@@ -93,16 +109,33 @@ class DBRepo:
     self.conn.commit()
     return [x for x in res]
 
-  def get_not_active_subscriptions_for_strategies_by_user_id(self, userId):
-    stmt = "SELECT * FROM subscriptions_for_strategies WHERE u_id = (?) AND is_active = 0"
+  def get_all_subscriptions_for_signals_by_user_id(self, userId):
+    stmt = "SELECT * FROM subscriptions_for_signals WHERE u_id = (?)"
     args = (userId, )
     res = self.conn.execute(stmt, args)
     self.conn.commit()
     return [x for x in res]
 
+  def get_not_active_subscriptions_for_strategies_by_user_id(self, userId):
+    validDateOfPurchase = (datetime.datetime.utcnow() - datetime.datetime(1970,1,1)).total_seconds() - config.MONTHINSECONDS
+    stmt = "SELECT * FROM subscriptions_for_strategies WHERE u_id = (?) AND date_of_purchase < (?)"
+    args = (userId, validDateOfPurchase)
+    res = self.conn.execute(stmt, args)
+    self.conn.commit()
+    return [x for x in res]
+
+  def get_not_active_subscriptions_for_signals_by_user_id(self, userId):
+    validDateOfPurchase = (datetime.datetime.utcnow() - datetime.datetime(1970,1,1)).total_seconds() - config.MONTHINSECONDS
+    stmt = "SELECT * FROM subscriptions_for_signals WHERE u_id = (?) AND date_of_purchase < (?)"
+    args = (userId, validDateOfPurchase)
+    res = self.conn.execute(stmt, args)
+    self.conn.commit()
+    return [x for x in res]
+
   def get_active_subscriptions_for_strategies_by_strategy_id(self, strategyId):
-    stmt = "SELECT * FROM subscriptions_for_strategies WHERE s_id = (?) AND is_active = 1"
-    args = (strategyId, )
+    validDateOfPurchase = (datetime.datetime.utcnow() - datetime.datetime(1970,1,1)).total_seconds() - config.MONTHINSECONDS
+    stmt = "SELECT * FROM subscriptions_for_strategies WHERE s_id = (?) AND date_of_purchase > (?)"
+    args = (strategyId, validDateOfPurchase)
     res = self.conn.execute(stmt, args)
     self.conn.commit()
     return [x for x in res]
@@ -115,18 +148,19 @@ class DBRepo:
     return [x for x in res]
 
   def get_not_active_subscriptions_for_strategies_by_strategy_id(self, strategyId):
-    stmt = "SELECT * FROM subscriptions_for_strategies WHERE s_id = (?) AND is_active = 0"
-    args = (strategyId, )
+    validDateOfPurchase = (datetime.datetime.utcnow() - datetime.datetime(1970,1,1)).total_seconds() - config.MONTHINSECONDS
+    stmt = "SELECT * FROM subscriptions_for_strategies WHERE s_id = (?) AND date_of_purchase < (?)"
+    args = (strategyId, validDateOfPurchase)
     res = self.conn.execute(stmt, args)
     self.conn.commit()
     return [x for x in res]
 
-  def deactivate_subscription_for_strategies_by_strategy_id_and_user_id(self, userId, strategyId):
-    stmt = "UPDATE subscriptions_for_strategies SET is_active = 0 WHERE u_id = (?) AND s_id = (?)"
-    args = (userId, strategyId)
-    res = self.conn.execute(stmt, args)
-    self.conn.commit()
-    return [x for x in res]
+  # def deactivate_subscription_for_strategies_by_strategy_id_and_user_id(self, userId, strategyId):
+  #   stmt = "UPDATE subscriptions_for_strategies SET is_active = 0 WHERE u_id = (?) AND s_id = (?)"
+  #   args = (userId, strategyId)
+  #   res = self.conn.execute(stmt, args)
+  #   self.conn.commit()
+  #   return [x for x in res]
 
   def add_strategy_link(self, strategyId, link, delay):
     stmt = "INSERT INTO strategies_links(s_id, link, delay) VALUES (?, ?, ?)"
@@ -145,6 +179,9 @@ class DBRepo:
 
     createSubscriptionsForStrategiesIndexCommand = "CREATE INDEX IF NOT EXISTS itemIndex ON subscriptions_for_strategies (u_id)" 
 
+    createSubscriptionsForSignalsTableCommand = "CREATE TABLE IF NOT EXISTS subscriptions_for_signals(u_id integer, date_of_purchase integer)"
+
+
     self.conn.execute(createSubscribersTableCommand)
 
     self.conn.execute(createStrategiesTableCommand)
@@ -154,6 +191,8 @@ class DBRepo:
     self.conn.execute(createStrategiesLinksTableCommand)
     
     self.conn.execute(createSubscriptionsForStrategiesIndexCommand)
+
+    self.conn.execute(createSubscriptionsForSignalsTableCommand)
 
     self.conn.commit()
 

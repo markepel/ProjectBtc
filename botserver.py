@@ -3,6 +3,8 @@ import botconfig as config
 import telegram
 from handlers import setHandlers
 import sys
+from paymentHandler import handlePayment
+from werkzeug.datastructures import ImmutableMultiDict
 
 TOKEN = config.TOKEN
 HOST = config.HOST
@@ -25,8 +27,9 @@ def webhook():
 
 @app.route('/invoice', methods=["POST", "GET"])
 def invoice():
-  print('----Invoice status----', request.form['invoice_status'])
-  print('=========New Invoice Form===========', request.form)
+  invoice = request.form.to_dict(flat=True)
+  handlePayment(invoice)
+  print('----Invoice-----', request.form)
   return ''
 
 if __name__ == '__main__':

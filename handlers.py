@@ -8,6 +8,8 @@ from manageStrategiesConversationHandlers import get_addstrategy_conv_handler
 from texts import Texts
 from menus import Menus
 from strategy import Strategy
+from paymentHandler import handlePayment
+from werkzeug.datastructures import ImmutableMultiDict
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -22,10 +24,9 @@ goBackTo = 'start'
 
 def start(bot, update):
   bot.send_message(chat_id=update.message.chat_id, text=Texts.getTextOnStart(update.message.from_user.first_name), reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
-  
+  #bot.send_photo(chat_id=update.message.chat_id, photo='https://www.iconexperience.com/_img/o_collection_png/green_dark_grey/256x256/plain/dog.png')
 def profile(bot, update):
   bot.send_message(chat_id=update.message.chat_id, text="Это личный кабинет!", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True))
-
 def signals(bot, update):
   bot.send_message(chat_id=update.message.chat_id, text="Это сигналы!", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True))
 
@@ -43,6 +44,25 @@ def strategy(bot, update):
   strategyItself = Strategy.fromDbObject(db.get_strategy_by_name(update.message.text)[0])
   keyboard = [[InlineKeyboardButton('Купить данную стратегию за ' + str(strategyItself.price) + '₽', callback_data='buy-s_name=' + strategyItself.name, url = Texts.generatePaymentButtonForStrategy(strategyItself.id, strategyItself.name, update.message.chat_id, strategyItself.price))]]
   bot.send_message(chat_id=update.message.chat_id, text=strategyItself.description, reply_markup=InlineKeyboardMarkup(keyboard))
+
+
+def paymentCheck(bot, update):
+  inputInvoiceData = ImmutableMultiDict([
+('invoice_status', 'paid'), 
+('invoice_expires', '1519824248'), 
+('invoice_currency', 'usd'), 
+('checkout_address', 'your_address_goes_here'), 
+('invoice_id', 'your_token_goes_here'), 
+('secret_hash', 'b1a6bacbe4c948b795f713d7b88224d313aa1400'), 
+('checkout_amount', '0.00010000'), 
+('invoice_created', '1519822448'), 
+('invoice_url', 'https://www.cryptonator.com/merchant/invoice/your_token_goes_here'), ('date_time', '1519823448'), 
+('order_id', '00001'),
+('checkout_currency', 'bitcoin'), 
+('invoice_amount', '5.5'), 
+('merchant_id', 'c19abb8aeca27d180d2f82e04a933f72')])
+  fakeInvoice = inputInvoiceData.to_dict(flat=True)
+  handlePayment(fakeInvoice)
 
 
 def backToMainMenu(bot, update):
@@ -63,7 +83,7 @@ def setHandlers(dp):
   handlers.append(RegexHandler('🔙Назад', backToMainMenu))
   handlers.append(get_addstrategy_conv_handler())
   handlers.append(RegexHandler(strategyNamesRegex, strategy))
-
+  handlers.append(CommandHandler('testpayment', paymentCheck))
 
   for handler in handlers:
   	dp.add_handler(handler)
