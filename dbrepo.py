@@ -2,6 +2,7 @@ import sqlite3
 import datetime
 from strategy import Strategy
 import botconfig as config
+import time
 
 class DBRepo:
   def __init__(self, dbname = config.DBNAME):
@@ -34,6 +35,18 @@ class DBRepo:
   def get_strategy_by_name(self, name):
     stmt = "SELECT * FROM strategies WHERE name = (?)"
     args = (name, )
+    res = self.conn.execute(stmt, args)
+    self.conn.commit()
+    return [x for x in res]
+
+  def get_active_subscribers_ids_for_strategy_by_name(self, name):
+    validDateOfPurchase = time.time() - config.MONTHINSECONDS
+
+    stmt = """SELECT subscriptions_for_strategies.u_id from subscriptions_for_strategies 
+    inner join strategies on strategies.id = subscriptions_for_strategies.s_id 
+    where strategies.name = (?) and subscriptions_for_strategies.date_of_purchase > (?)
+    """
+    args = (name, validDateOfPurchase)
     res = self.conn.execute(stmt, args)
     self.conn.commit()
     return [x for x in res]
@@ -121,6 +134,14 @@ class DBRepo:
   def get_all_subscriptions_for_signals_by_user_id(self, userId):
     stmt = "SELECT * FROM subscriptions_for_signals WHERE u_id = (?)"
     args = (userId, )
+    res = self.conn.execute(stmt, args)
+    self.conn.commit()
+    return [x for x in res]
+
+  def get_all_active_subscriptions_ids_for_signals(self):
+    validDateOfPurchase = time.time() - config.MONTHINSECONDS
+    stmt = "SELECT u_id FROM subscriptions_for_signals WHERE  date_of_purchase > (?)"
+    args = (validDateOfPurchase, )
     res = self.conn.execute(stmt, args)
     self.conn.commit()
     return [x for x in res]

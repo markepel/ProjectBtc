@@ -1,15 +1,21 @@
 import telegram
-from telegram.ext import (CommandHandler,MessageHandler,RegexHandler,Filters)
+from telegram.ext import (CommandHandler,MessageHandler,RegexHandler,CallbackQueryHandler,Filters)
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove, InlineKeyboardButton, InlineKeyboardMarkup)
 import logging
 from dbrepo import DBRepo
 import botconfig as config
 from manageStrategiesConversationHandlers import get_addstrategy_conv_handler
+from supportConversationHandler import get_support_conv_handler
 from texts import Texts
 from menus import Menus
 from strategy import Strategy
 from paymentHandler import handlePayment
 from werkzeug.datastructures import ImmutableMultiDict
+import datetime
+from publishStrategyConvHandler import get_publishstrategy_conv_handler
+from publishSignalConvHandler import get_publishsignal_conv_handler
+from publishSupportReplyConvHandler import get_publishreply_conv_handler
+
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -24,29 +30,47 @@ goBackTo = 'start'
 
 def start(bot, update):
   bot.send_message(chat_id=update.message.chat_id, text=Texts.getTextOnStart(update.message.from_user.first_name), reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
-  #bot.send_photo(chat_id=update.message.chat_id, photo='https://www.iconexperience.com/_img/o_collection_png/green_dark_grey/256x256/plain/dog.png')
+
+def cancelEmail(bot, update):
+  bot.send_message(chat_id=update.message.chat_id, text="Обращение отменено.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
 
 def profile(bot, update):
-  bot.send_message(chat_id=update.message.chat_id, text="Это личный кабинет!", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True))
+  db = DBRepo()
+  activeStrategySubscriptions = db.get_active_subscriptions_for_strategies_by_user_id(int(update.message.chat_id))
+  signalsSubscriptionsDb = db.get_active_subscriptions_for_signals_by_user_id(int(update.message.chat_id))
+  strategiesInfo = dict()
+  signalsSubscriptions = dict()
+  for aSS in activeStrategySubscriptions:
+    sName = db.get_strategy_by_id(aSS[1])[0][1]
+    strategiesInfo[sName] = datetime.datetime.fromtimestamp(aSS[4] + config.MONTHINSECONDS).date()
+  for sig in signalsSubscriptionsDb:
+    signalsSubscriptions[True] = datetime.datetime.fromtimestamp(sig[1] + config.MONTHINSECONDS).date()
+
+  bot.send_message(chat_id=update.message.chat_id, text=Texts.getTextForProfile(strategiesInfo, signalsSubscriptions), reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
 
 def signals(bot, update):
   keyboard = [[InlineKeyboardButton('Купить подписку на сигналы за ' + str(config.SUBSCRIPTIONFORSIGNALSPRICE) + '₽', callback_data='buy-signals', url = Texts.generatePaymentButtonForSignals(update.message.chat_id, config.SUBSCRIPTIONFORSIGNALSPRICE))]]
-  bot.send_message(chat_id=update.message.chat_id, text=Texts.getTextForSignals(), reply_markup=InlineKeyboardMarkup(keyboard))
+  bot.send_message(chat_id=update.message.chat_id, text=Texts.getTextForSignals(), reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=telegram.ParseMode.HTML)
 
 def strategies(bot, update):
-  bot.send_message(chat_id=update.message.chat_id, text=Texts.getTextForStrategies(), reply_markup=ReplyKeyboardMarkup(reply_keyboard_strategies, one_time_keyboard=True))
+  bot.send_message(chat_id=update.message.chat_id, text=Texts.getTextForStrategies(), reply_markup=ReplyKeyboardMarkup(reply_keyboard_strategies, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
 
 def stuff(bot, update):
-  bot.send_message(chat_id=update.message.chat_id, text="Это обучающие материалы!", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True))
+  bot.send_message(chat_id=update.message.chat_id, text=Texts.getTextForSubscriptionForStuff(), reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
 
 def contacts(bot, update):
-  bot.send_message(chat_id=update.message.chat_id, text="Это служба поддержки!", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True))
+  keyboard = [[InlineKeyboardButton('Написать в службу поддержки', callback_data='email')]]
+  bot.send_message(chat_id=update.message.chat_id, text="Отправьте свое обращение на адрес {0}.\n Или сделайте это прямо здесь, нажав на кнопку \"Написать в службу поддержки\"".format(config.EMAILTO), reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=telegram.ParseMode.HTML)
+
+# def email(bot, update):
+#   bot.send_message(chat_id=update.callback_query.message.chat.id, text="LOL", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+
 
 def strategy(bot, update):
   db = DBRepo()
   strategyItself = Strategy.fromDbObject(db.get_strategy_by_name(update.message.text)[0])
   keyboard = [[InlineKeyboardButton('Купить данную стратегию за ' + str(strategyItself.price) + '₽', callback_data='buy-s_name=' + strategyItself.name, url = Texts.generatePaymentButtonForStrategy(strategyItself.id, strategyItself.name, update.message.chat_id, strategyItself.price))]]
-  bot.send_message(chat_id=update.message.chat_id, text=strategyItself.description, reply_markup=InlineKeyboardMarkup(keyboard))
+  bot.send_message(chat_id=update.message.chat_id, text=strategyItself.description, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=telegram.ParseMode.HTML)
 
 def paymentCheck(bot, update):
   inputInvoiceData = ImmutableMultiDict([
@@ -84,8 +108,13 @@ def setHandlers(dp):
   handlers.append(RegexHandler('Служба поддержки', contacts))
   handlers.append(RegexHandler('🔙Назад', backToMainMenu))
   handlers.append(get_addstrategy_conv_handler())
+  handlers.append(get_support_conv_handler())
+  handlers.append(get_publishsignal_conv_handler())
+  handlers.append(get_publishstrategy_conv_handler())
+  handlers.append(get_publishreply_conv_handler())
   handlers.append(RegexHandler(strategyNamesRegex, strategy))
   handlers.append(CommandHandler('testpayment', paymentCheck))
+  handlers.append(RegexHandler('Отменить обращение', cancelEmail))
 
   for handler in handlers:
   	dp.add_handler(handler)

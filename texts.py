@@ -29,6 +29,27 @@ class Texts:
      <b>Сигналы</b> – ежедневная публикация списка перспективных монет, которые вырастут в ценев ближайшее время.
      <b>Литература</b> – в этом разделе вы найдете интересные книги, зарекомендовавшие себя по всему миру, описывающие финансовые рынки, принцип их работы и способы заработка.""".format(name)
 
+  @staticmethod
+  def getTextForSubscriptionForStuff():
+    return """
+<b>Книги</b>    
+<a href="http://forex4people.ru/books/STEVE_NISON.pdf">Стивен Ниссон - Свечной Анализ</a>
+
+<a href="https://trade-obzor.ru/wp-content/themes/trade-
+obzor/books/26/%D0%AD%D0%B4%D0%B2%D0%B8%D0%BD%20%D0%9B%D0%B5%D1%84%D0%B5%
+D0%B2%D1%80,%20%D0%92%D0%BE%D1%81%D0%BF%D0%BE%D0%BC%D0%B8%D0%BD%D0%B0%D
+0%BD%D0%B8%D1%8F%20%D0%B1%D0%B8%D1%80%D0%B6%D0%B5%D0%B2%D0%BE%D0%B3%D0
+%BE%20%D1%81%D0%BF%D0%B5%D0%BA%D1%83%D0%BB%D1%8F%D0%BD%D1%82%D0%B0.pdf">Воспоминания Биржевого Спекулянта – Эдвин Леферв</a>
+
+<a href="http://www.library.fa.ru/files/Stiglitz-global.pdf">Глобализация - Джозеф Стиглиц</a>
+
+<a href="https://trade-obzor.ru/wp- content/themes/trade-
+obzor/books/26/%D0%9C%D0%B0%D0%B8%CC%86%D0%BA%D0%BB%20%D0%9B%D1%8C%D1%8E%D
+0%B8%D1%81,%20%D0%9F%D0%BE%D0%BA%D0%B5%D1%80%20%D0%BB%D0%B6%D0%B5%D1%86
+%D0%BE%D0%B2.pdf">Покер Лжецов - Майкл Льюис</a>
+
+<a href="http://treff.kz/wp-content/uploads/2015/08/Nassim_Taleb__CHernyj_lebed._Pod_znakom_nepredskazuemosti.pdf">Чёрный лебедь - Нассим Талеб</a>
+    """
 
   @staticmethod
   def getTextForSubscriptionForSignals():
@@ -38,6 +59,26 @@ class Texts:
   def getTextForSubscriptionForStrategy(strategyName):
     return """Поздравляем! Вы приобрели подписку на стратегию {0}. Информацию о текущих подписках вы можете посмотреть в личном кабинете. Успешной торговли!""".format(strategyName)
 
+  @staticmethod
+  def getTextForProfile(strategyNamesAndExpireDatesDict, isSubscribedOnSignalsAndExpireDateDict):
+    print('isSubscribedOnSignalsAndExpireDateDict - ', isSubscribedOnSignalsAndExpireDateDict)
+    strategiesText = "<b>Стратегии:</b>\n"
+    for strategyName in strategyNamesAndExpireDatesDict.keys():
+      strategiesText += "{0} (действительна до {1})\n".format(strategyName, strategyNamesAndExpireDatesDict[strategyName])
+
+    signalsInfo = "Подписка оформлена до {0}".format(isSubscribedOnSignalsAndExpireDateDict[True]) if True in isSubscribedOnSignalsAndExpireDateDict else "Подписка не оформлена."
+
+    signalsText = "<b>Сигналы:</b>\n{0}".format(signalsInfo)
+
+    return '{} {}'.format(strategiesText, signalsText)
+
+
+    return """Стратегии:
+«Леонардо» (действительна до 01.02.2018)
+«Торговля на уровне» (действительна до 05.03.2018)
+Сигналы:
+Подписка не оформлена.
+"""
 
   @staticmethod
   def getTextForStrategies():

@@ -50,16 +50,16 @@ def handlePayment(invoiceData):
           messageToSend = "Сумма оплаты меньше суммы заказа. Стоимость - {0}, оплачено - {1}. Обратитесь в службу поддержки.".format(config.SUBSCRIPTIONFORSIGNALSPRICE, amount)
 
     elif status == 'cancelled' or status == 'mispaid':
+      
       messageToSend = "Статус транзакции - {0}. Подписка не оформлена.".format(status)
       if strategyWasBought(invoiceForData): 
         db.delete_subscription_for_strategy(invoiceForData['chatId'], invoiceForData['strategyId'])       
       else:
         db.delete_subscription_for_signals(invoiceForData['chatId'])
-
+    bot.send_message(chat_id=invoiceForData['chatId'], text=messageToSend, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
   else:
     messageToSend = "Оплата недействительна. Обратитесь в службу поддержки."
-
-  bot.send_message(chat_id=invoiceForData['chatId'], text=messageToSend, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+    bot.send_message(chat_id=invoiceForData['chatId'], text=messageToSend, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
 
 def checkPaymentValidity(i):
   stringToCheck = '{0}&{1}&{2}&{3}&{4}&{5}&{6}&{7}&{8}&{9}&{10}&{11}&{12}&{13}'.format(i['merchant_id'], i['invoice_id']
