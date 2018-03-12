@@ -14,7 +14,7 @@ urlPattern = "((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:
 #delayUrlPattern = "(((^(\d{1}|\d{2}|\d{3})\s[A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w_-]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)|^(/finish)$"
 finishPattern = '^(/finish)$'
 anyTextPattern = "^(?![/cancel])^(?!\s*$).+"
-pricePattern = "^([1-9][0-9][0-9])$|^([1-9][0-9][0-9][0-9])$|^([1-9][0-9][0-9][0-9][0-9])$"
+pricePattern = "^([1-9][0-9])$|^([1-9][0-9][0-9])$|^([1-9][0-9][0-9][0-9])$|^([1-9][0-9][0-9][0-9][0-9])$"
 strategyToAdd = Strategy.empty()
 
 PASSWORD, NAME, DESCRIPTION, RIGHTAWAYLINK, PRICE, FINISH = range(6)
