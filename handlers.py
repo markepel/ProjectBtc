@@ -22,7 +22,7 @@ logging.basicConfig(level=logging.DEBUG,
 db = DBRepo()
 db.setup()
 handlers = []
-reply_keyboard_main_menu = [['Стратегии'], ['Сигналы'], ['Материалы','Служба поддержки'], ['Личный кабинет']]
+reply_keyboard_main_menu = [['Стратегии 🥇'], ['Сигналы 💰'], ['Материалы 📂','Служба поддержки 📞'], ['Личный кабинет 🔐']]
 reply_keyboard_strategies = Menus.generateStrategiesMenu()
 strategyNamesRegex = Texts.generateRegexForStrategies(db.get_all_strategies_names())
 goBackTo = 'start'
@@ -101,11 +101,11 @@ def backToMainMenu(bot, update):
 
 def setHandlers(dp):
   handlers.append(CommandHandler('start', start))
-  handlers.append(RegexHandler('Личный кабинет', profile))
-  handlers.append(RegexHandler('Сигналы', signals))
-  handlers.append(RegexHandler('Стратегии', strategies))
-  handlers.append(RegexHandler('Материалы', stuff))
-  handlers.append(RegexHandler('Служба поддержки', contacts))
+  handlers.append(RegexHandler('Личный кабинет 🔐', profile))
+  handlers.append(RegexHandler('Сигналы 💰', signals))
+  handlers.append(RegexHandler('Стратегии 🥇', strategies))
+  handlers.append(RegexHandler('Материалы 📂', stuff))
+  handlers.append(RegexHandler('Служба поддержки 📞', contacts))
   handlers.append(RegexHandler('🔙Назад', backToMainMenu))
   handlers.append(get_addstrategy_conv_handler())
   handlers.append(get_support_conv_handler())

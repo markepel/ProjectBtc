@@ -13,12 +13,12 @@ import time
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 db = DBRepo()
-reply_keyboard_main_menu = [['Стратегии'], ['Сигналы'], ['Материалы','Служба поддержки'], ['Личный кабинет']]
+reply_keyboard_main_menu = [['Стратегии 🥇'], ['Сигналы 💰'], ['Материалы 📂','Служба поддержки 📞'], ['Личный кабинет 🔐']]
 reply_keyboard_strategies = Menus.generateStrategiesMenu()
 strategyNamesRegex = Texts.generateRegexForStrategies(db.get_all_strategies_names())
 finishPattern = '^(/finish)$'
 anyTextPattern = "^(?![/cancel])^(?!\s*$).+"
-publishStrategyInfo = PublishStrategyInfo()
+strategy_state = {}
 
 
 PASSWORD, CHOOSESTRATEGY, GETPHOTO, GETTEXT, FINISH = range(5)
@@ -32,34 +32,43 @@ def password(bot, update):
   return CHOOSESTRATEGY
 
 def name(bot, update):
+  publishStrategyInfo = PublishStrategyInfo()
   publishStrategyInfo.setStrategyName(update.message.text) 
+  global strategy_state
+  strategy_state[update.message.chat_id] = publishStrategyInfo
   bot.send_message(chat_id=update.message.chat_id, text="Картинка для публикации:")
   return GETPHOTO
 
 def photo(bot, update):
-  publishStrategyInfo.setPhotoId(update.message.photo[-1].file_id)
+  global strategy_state
+  strategy_state[update.message.chat_id].setPhotoId(update.message.photo[-1].file_id)
 
   bot.send_message(chat_id=update.message.chat_id, text="Введите текст для публикации:")
   print("return GETTEXT")
   return GETTEXT
 
 def text(bot, update):
-  publishStrategyInfo.setText(update.message.text)
+  global strategy_state
+  strategy_state[update.message.chat_id].setText(update.message.text)
   bot.send_message(chat_id=update.message.chat_id, text="Введите /finish для завершения и публикации ли /cancel для отмены.")
   return FINISH
 
 def finish(bot, update):
   db = DBRepo()
-  idsToPublish = db.get_active_subscribers_ids_for_strategy_by_name(publishStrategyInfo.strategyName)[0]
+  global strategy_state
+  idsToPublish = db.get_active_subscribers_ids_for_strategy_by_name(strategy_state[update.message.chat_id].strategyName)[0]
   for id in idsToPublish:
-    bot.send_photo(chat_id=id, photo=publishStrategyInfo.photoId, caption = publishStrategyInfo.text, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True))
+    bot.send_photo(chat_id=id, photo=strategy_state[update.message.chat_id].photoId, caption = strategy_state[update.message.chat_id].text, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True))
     time.sleep(0.03)
 
   bot.send_message(chat_id=update.message.chat_id, text="Публикация стратегии разослана подписантам.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True))
+  del strategy_state[update.message.chat_id]
   return ConversationHandler.END
 
 def cancel(bot, update):
+  global strategy_state
   bot.send_message(chat_id=update.message.chat_id, text="Отмена публикации", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True))
+  del strategy_state[update.message.chat_id]
   return ConversationHandler.END
 
 publishstrategy_conv_handler = ConversationHandler(
