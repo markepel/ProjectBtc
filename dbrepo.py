@@ -19,6 +19,25 @@ class DBRepo:
     self.conn.commit()
     return addedId
 
+  def add_user(self, id, firstName):
+    dateOfCreationUnix = (datetime.datetime.utcnow() - datetime.datetime(1970,1,1)).total_seconds()
+    stmt = "INSERT INTO users (id , first_name, registered_on) VALUES (?, ?, ?)"
+    args = (id, firstName, dateOfCreationUnix)
+    self.conn.execute(stmt, args)
+    self.conn.commit()
+
+  def delete_user(self, id):
+    stmt = "DELETE FROM users WHERE id = (?)"
+    args = (id, )
+    self.conn.execute(stmt, args)
+    self.conn.commit()
+
+  def get_all_users_ids(self):
+    stmt = "SELECT id FROM users"
+    res = self.conn.execute(stmt)
+    self.conn.commit()
+    return [x for x in res]
+
   def delete_strategy(self, id):
     stmt = "DELETE FROM strategies WHERE id = (?)"
     args = (id, )
@@ -199,6 +218,8 @@ class DBRepo:
     self.conn.commit()
 
   def setup(self):
+    createUsersTableCommand = "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, first_name text, registered_on integer)"
+
     createSubscribersTableCommand = "CREATE TABLE IF NOT EXISTS subscribers (id INTEGER PRIMARY KEY, first_name text, last_name text)"
 
     createStrategiesTableCommand = "CREATE TABLE IF NOT EXISTS strategies (id INTEGER PRIMARY KEY, name text, description text, price integer, rightaway_link text, date_of_creation integer)"
@@ -223,6 +244,8 @@ class DBRepo:
     self.conn.execute(createSubscriptionsForStrategiesIndexCommand)
 
     self.conn.execute(createSubscriptionsForSignalsTableCommand)
+
+    self.conn.execute(createUsersTableCommand)
 
     self.conn.commit()
 

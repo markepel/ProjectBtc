@@ -22,13 +22,13 @@ def publishReply(bot, update):
   return PASSWORD
  
 def password(bot, update):
-  bot.send_message(chat_id=update.message.chat_id, text="Введите текст ответа:", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True))
+  bot.send_message(chat_id=update.message.chat_id, text="Введите текст ответа:", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
   return GETTEXT
 
 def text(bot, update):
   global reply_state
   reply_state["text_for_{0}".format(update.message.chat_id)] = update.message.text
-  bot.send_message(chat_id=update.message.chat_id, text="Введите идентификатор пользователя:", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True))
+  bot.send_message(chat_id=update.message.chat_id, text="Введите идентификатор пользователя:", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
   return GETCHATID
 
 def chatId(bot, update):
@@ -40,7 +40,7 @@ def chatId(bot, update):
 def finish(bot, update):
   global reply_state
   bot.send_message(chat_id=reply_state["chatid_for_{0}".format(update.message.chat_id)], text="<b>Ответ от службы поддержки</b> \n {0}".format(reply_state["text_for_{0}".format(update.message.chat_id)]), reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
-  bot.send_message(chat_id=update.message.chat_id, text="Ответ отправлен.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True))
+  bot.send_message(chat_id=update.message.chat_id, text="Ответ отправлен.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
   del reply_state["chatid_for_{0}".format(update.message.chat_id)]
   del reply_state["text_for_{0}".format(update.message.chat_id)]
 
@@ -48,7 +48,7 @@ def finish(bot, update):
   return ConversationHandler.END
 
 def cancel(bot, update):
-  bot.send_message(chat_id=update.message.chat_id, text="Отмена публикации", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True))
+  bot.send_message(chat_id=update.message.chat_id, text="Отмена публикации", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
   global reply_state
   if "chatid_for_{0}".format(update.message.chat_id) in reply_state:
     del reply_state["chatid_for_{0}".format(update.message.chat_id)]

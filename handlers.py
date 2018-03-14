@@ -15,6 +15,7 @@ import datetime
 from publishStrategyConvHandler import get_publishstrategy_conv_handler
 from publishSignalConvHandler import get_publishsignal_conv_handler
 from publishSupportReplyConvHandler import get_publishreply_conv_handler
+from publishForAllConvHandler import get_publishforall_conv_handler
 
 
 logging.basicConfig(level=logging.DEBUG,
@@ -30,6 +31,8 @@ goBackTo = 'start'
 
 def start(bot, update):
   bot.send_message(chat_id=update.message.chat_id, text=Texts.getTextOnStart(update.message.from_user.first_name), reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+  db = DBRepo()
+  db.add_user(update.message.from_user.id, update.message.from_user.first_name)  
 
 def cancelEmail(bot, update):
   bot.send_message(chat_id=update.message.chat_id, text="Обращение отменено.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
@@ -112,6 +115,7 @@ def setHandlers(dp):
   handlers.append(get_publishsignal_conv_handler())
   handlers.append(get_publishstrategy_conv_handler())
   handlers.append(get_publishreply_conv_handler())
+  handlers.append(get_publishforall_conv_handler())
   handlers.append(RegexHandler(strategyNamesRegex, strategy))
   handlers.append(CommandHandler('testpayment', paymentCheck))
   handlers.append(RegexHandler('Отменить обращение', cancelEmail))
