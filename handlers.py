@@ -47,7 +47,7 @@ def profile(bot, update):
     sName = db.get_strategy_by_id(aSS[1])[0][1]
     strategiesInfo[sName] = datetime.datetime.fromtimestamp(aSS[4] + config.MONTHINSECONDS).date()
   for sig in signalsSubscriptionsDb:
-    signalsSubscriptions[True] = datetime.datetime.fromtimestamp(sig[1] + config.MONTHINSECONDS).date()
+    signalsSubscriptions[True] = datetime.datetime.fromtimestamp(sig[2] + config.MONTHINSECONDS).date()
 
   bot.send_message(chat_id=update.message.chat_id, text=Texts.getTextForProfile(strategiesInfo, signalsSubscriptions), reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
 

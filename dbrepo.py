@@ -230,7 +230,7 @@ class DBRepo:
 
     createSubscriptionsForStrategiesIndexCommand = "CREATE INDEX IF NOT EXISTS itemIndex ON subscriptions_for_strategies (u_id)" 
 
-    createSubscriptionsForSignalsTableCommand = "CREATE TABLE IF NOT EXISTS subscriptions_for_signals(u_id integer, date_of_purchase integer)"
+    createSubscriptionsForSignalsTableCommand = "CREATE TABLE IF NOT EXISTS subscriptions_for_signals(id INTEGER PRIMARY KEY, u_id integer, date_of_purchase integer)"
 
 
     self.conn.execute(createSubscribersTableCommand)
