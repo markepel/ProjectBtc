@@ -56,14 +56,15 @@ def text(bot, update):
 def finish(bot, update):
   db = DBRepo()
   global strategy_state
-  idsToPublishBig = db.get_active_subscribers_ids_for_strategy_by_name(strategy_state[update.message.chat_id].strategyName)
+  strategyName = strategy_state[update.message.chat_id].strategyName
+  idsToPublishBig = db.get_active_subscribers_ids_for_strategy_by_name(strategyName)
 
   for idsToPublish in idsToPublishBig:
     for id in idsToPublish:
       text = """
-      <b>Урок стратегии:</b>
+      <b>Урок стратегии "{1}":</b>
       {0}
-       """.format(strategy_state[update.message.chat_id].text)
+       """.format(strategy_state[update.message.chat_id].text, strategyName)
       bot.send_photo(chat_id=id, photo=strategy_state[update.message.chat_id].photoId, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
       bot.send_message(chat_id=id, text=text, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
       time.sleep(0.04)
