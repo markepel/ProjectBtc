@@ -9,8 +9,8 @@ from email.message import EmailMessage
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-anyTextPattern = "^(?![Хуй])^(?!\s*$).+"
-cancelTextPattern = '^(Отменить)$'
+anyTextPattern = "^(?![/cancel])^(?!\s*$).+"
+cancelTextPattern = '^(Отменить обращение)$'
 
 reply_keyboard_main_menu = [['Стратегии 🏆'], ['Сигналы 💰'], ['Материалы 📂','Служба поддержки 📞'], ['Личный кабинет 🔐']]
 
