@@ -56,7 +56,7 @@ def text(bot, update):
 def finish(bot, update):
   db = DBRepo()
   global strategy_state
-  idsToPublishBig = db.get_active_subscribers_ids_for_strategy_by_name(strategy_state[update.message.chat_id].strategyName)[0]
+  idsToPublishBig = db.get_active_subscribers_ids_for_strategy_by_name(strategy_state[update.message.chat_id].strategyName)
   print("Ids to publish idsToPublishBig  -- ", idsToPublishBig)
 
   for idsToPublish in idsToPublishBig:
