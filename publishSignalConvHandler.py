@@ -37,9 +37,9 @@ def finish(bot, update):
   global signal_state
   text = signal_state["text_for_{0}".format(update.message.chat_id)]
   for idsToPublish in idsToPublishBig:
-    for id in idsToPublish:
-      bot.send_message(chat_id=update.message.chat_id, text=text, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
-      time.sleep(0.03)
+    id = idsToPublish[0]
+    bot.send_message(chat_id=id, text=text, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+    time.sleep(0.03)
   bot.send_message(chat_id=update.message.chat_id, text="Сигнал разослан подписантам.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
   del signal_state["text_for_{0}".format(update.message.chat_id)]
 
