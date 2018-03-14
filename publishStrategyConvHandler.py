@@ -13,7 +13,7 @@ import time
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 db = DBRepo()
-reply_keyboard_main_menu = [['Стратегии 🥇'], ['Сигналы 💰'], ['Материалы 📂','Служба поддержки 📞'], ['Личный кабинет 🔐']]
+reply_keyboard_main_menu = [['Стратегии 🏆'], ['Сигналы 💰'], ['Материалы 📂','Служба поддержки 📞'], ['Личный кабинет 🔐']]
 reply_keyboard_strategies = Menus.generateStrategiesMenu()
 strategyNamesRegex = Texts.generateRegexForStrategies(db.get_all_strategies_names())
 finishPattern = '^(/finish)$'
@@ -60,8 +60,11 @@ def finish(bot, update):
 
   for idsToPublish in idsToPublishBig:
     for id in idsToPublish:
-
-      bot.send_photo(chat_id=id, photo=strategy_state[update.message.chat_id].photoId, caption = strategy_state[update.message.chat_id].text, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+      text = """
+      <b>Урок стратегии:</b>
+      {0}
+       """.format(strategy_state[update.message.chat_id].text)
+      bot.send_photo(chat_id=id, photo=strategy_state[update.message.chat_id].photoId, caption =  text, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
       time.sleep(0.03)
 
   bot.send_message(chat_id=update.message.chat_id, text="Публикация стратегии разослана подписантам.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
