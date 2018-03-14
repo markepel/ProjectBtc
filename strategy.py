@@ -32,7 +32,6 @@ class Strategy:
   @classmethod
   def fromDbObject(cls, dbObject):
     res = cls(dbObject[1], dbObject[2], dbObject[3], dbObject[4], []) 
-    print('AAAAAAAAAAAAA, dbobject of strategy - {0}', dbObject)
     res.set_creationTime(datetime.datetime.fromtimestamp(dbObject[5]))
     res.set_id(dbObject[0])
     return res

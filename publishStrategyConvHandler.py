@@ -56,14 +56,15 @@ def text(bot, update):
 def finish(bot, update):
   db = DBRepo()
   global strategy_state
-  idsToPublish = db.get_active_subscribers_ids_for_strategy_by_name(strategy_state[update.message.chat_id].strategyName)[0]
-  print("Ids to publish -- ", idsToPublish)
+  idsToPublishBig = db.get_active_subscribers_ids_for_strategy_by_name(strategy_state[update.message.chat_id].strategyName)[0]
+  print("Ids to publish idsToPublishBig  -- ", idsToPublishBig)
 
-  for id in idsToPublish:
-    print("Idsdddddddddd -- ", id)
+  for idsToPublish in idsToPublishBig:
+    for id in idsToPublish:
+      print("Idsdddddddddd -- ", id)
 
-    bot.send_photo(chat_id=id, photo=strategy_state[update.message.chat_id].photoId, caption = strategy_state[update.message.chat_id].text, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
-    time.sleep(0.03)
+      bot.send_photo(chat_id=id, photo=strategy_state[update.message.chat_id].photoId, caption = strategy_state[update.message.chat_id].text, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+      time.sleep(0.03)
 
   bot.send_message(chat_id=update.message.chat_id, text="Публикация стратегии разослана подписантам.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
   del strategy_state[update.message.chat_id]
