@@ -29,7 +29,7 @@ def webhook():
     dp.process_update(update)
   except Exception as e:
     logger.error("An error occured handling webhook when request was - \n {0}".format(request.get_json(force=True)))  
-    logger.error("Error itself = \n {0}".format(str(e))
+    logger.error("Error itself = \n {0}".format(str(e)))
   finally:
     return ''
 
@@ -41,7 +41,7 @@ def invoice():
     print('----Invoice-----', request.form)
   except Exception as e:
     logger.error("An error occured handling invoice when request was - \n {0}".format(request.form))  
-    logger.error("Invoice Error itself = \n {0}".format(str(e))
+    logger.error("Invoice Error itself = \n {0}".format(str(e)))
   finally:
     return ''
 
@@ -53,7 +53,7 @@ def cardInvoice():
     print('----Card Invoice-----', request.form)
   except Exception as e:
     logger.error("An error occured handling card invoice when request was - \n {0}".format(request.form))  
-    logger.error("Card Invoice Error itself = \n {0}".format(str(e))
+    logger.error("Card Invoice Error itself = \n {0}".format(str(e)))
   finally:
     return ''
 
