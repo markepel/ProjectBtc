@@ -34,6 +34,7 @@ def invoice():
     print('----Invoice-----', request.form)
     return ''
   except Exception as e:
+    print('----Invoice-----', request.form)
 
 @app.route('/cardInvoice', methods=["POST", "GET"])
 def cardInvoice():
@@ -41,6 +42,7 @@ def cardInvoice():
     print('----Card Invoice-----', request.form)
     return ''
   except Exception as e:
+    print('----Invoice-----', request.form)
 
 
 if __name__ == '__main__':
