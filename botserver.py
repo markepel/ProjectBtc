@@ -3,7 +3,7 @@ import botconfig as config
 import telegram
 from handlers import setHandlers
 import sys
-from paymentHandler import handlePayment,hadleCardPayment
+from paymentHandler import handlePayment, handleCardPayment
 from werkzeug.datastructures import ImmutableMultiDict
 import logging
 
