@@ -6,6 +6,7 @@ import sys
 from paymentHandler import handlePayment, handleCardPayment
 from werkzeug.datastructures import ImmutableMultiDict
 import logging
+import logging.handlers
 
 def setUpLoggers():
   formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
