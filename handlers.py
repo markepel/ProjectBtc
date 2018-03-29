@@ -52,7 +52,9 @@ def profile(bot, update):
   bot.send_message(chat_id=update.message.chat_id, text=Texts.getTextForProfile(strategiesInfo, signalsSubscriptions), reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
 
 def signals(bot, update):
-  keyboard = [[InlineKeyboardButton('Купить подписку на сигналы за ' + str(config.SUBSCRIPTIONFORSIGNALSPRICE) + '₽', callback_data='buy-signals', url = Texts.generatePaymentButtonForSignals(update.message.chat_id, config.SUBSCRIPTIONFORSIGNALSPRICE))]]
+  cryptoPaymentButton = [InlineKeyboardButton('Оплатить подписку криптовалютой. Стоимость - ' + str(config.SUBSCRIPTIONFORSIGNALSPRICE) + '₽', callback_data='buy-signals', url = Texts.generatePaymentButtonForSignals(update.message.chat_id, config.SUBSCRIPTIONFORSIGNALSPRICE))]
+  cardPaymentButton = [InlineKeyboardButton('Оплатить картой. Стоимость - ' + str(config.SUBSCRIPTIONFORSIGNALSPRICE) + '₽', callback_data='buy-signals', url = Texts.generateCardPaymentButtonForSignals(update.message.chat_id, config.SUBSCRIPTIONFORSIGNALSPRICE))]
+  keyboard = [cryptoPaymentButton, cardPaymentButton]
   bot.send_message(chat_id=update.message.chat_id, text=Texts.getTextForSignals(), reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=telegram.ParseMode.HTML)
 
 def strategies(bot, update):
@@ -72,7 +74,9 @@ def contacts(bot, update):
 def strategy(bot, update):
   db = DBRepo()
   strategyItself = Strategy.fromDbObject(db.get_strategy_by_name(update.message.text)[0])
-  keyboard = [[InlineKeyboardButton('Купить данную стратегию за ' + str(strategyItself.price) + '₽', callback_data='buy-s_name=' + strategyItself.name, url = Texts.generatePaymentButtonForStrategy(strategyItself.id, strategyItself.name, update.message.chat_id, strategyItself.price))]]
+  cryptoPaymentButton = [InlineKeyboardButton('Оплатить криптовалютой. Стоимость - ' + str(strategyItself.price) + '₽', callback_data='buy-s_name=' + strategyItself.name, url = Texts.generatePaymentButtonForStrategy(strategyItself.id, strategyItself.name, update.message.chat_id, strategyItself.price))]
+  cardPaymentButton = [InlineKeyboardButton('Оплатить картой. Стоимость - ' + str(strategyItself.price) + '₽', callback_data='buy-s_name=' + strategyItself.name, url = Texts.generateCardPaymentButtonForStrategy(strategyItself.id, strategyItself.name, update.message.chat_id, strategyItself.price))]
+  keyboard = [cryptoPaymentButton, cardPaymentButton]
   bot.send_message(chat_id=update.message.chat_id, text=strategyItself.description, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=telegram.ParseMode.HTML)
 
 def paymentCheck(bot, update):

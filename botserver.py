@@ -5,6 +5,7 @@ from handlers import setHandlers
 import sys
 from paymentHandler import handlePayment
 from werkzeug.datastructures import ImmutableMultiDict
+import logging
 
 TOKEN = config.TOKEN
 HOST = config.HOST
@@ -27,10 +28,20 @@ def webhook():
 
 @app.route('/invoice', methods=["POST", "GET"])
 def invoice():
-  invoice = request.form.to_dict(flat=True)
-  handlePayment(invoice)
-  print('----Invoice-----', request.form)
-  return ''
+  try:
+    invoice = request.form.to_dict(flat=True)
+    handlePayment(invoice)
+    print('----Invoice-----', request.form)
+    return ''
+  except Exception as e:
+
+@app.route('/cardInvoice', methods=["POST", "GET"])
+def cardInvoice():
+  try:
+    print('----Card Invoice-----', request.form)
+    return ''
+  except Exception as e:
+
 
 if __name__ == '__main__':
   app.run(host='0.0.0.0', port=PORT, ssl_context=context)

@@ -16,12 +16,8 @@ reply_keyboard_main_menu = [['Стратегии 🏆'], ['Сигналы 💰']
 def handlePayment(invoiceData):
   print('invoiceData = {0}'.format(invoiceData))
   status = invoiceData['invoice_status']
-  print('status = {0}'.format(status))
   amount = invoiceData['invoice_amount']
-  print('amount = {0}'.format(amount))
   invoiceForData = getInvoiceForData(invoiceData['order_id'])
-  #invoiceForData = {'chatId': 111384340, 'strategyId': 7}
-  print('invoiceForData = {0}'.format(invoiceForData))
   messageToSend = ""
   paymentIsValid = checkPaymentValidity(invoiceData)
 

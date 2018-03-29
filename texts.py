@@ -1,5 +1,6 @@
 import botconfig as config
 
+
 class Texts:
   @staticmethod
   def generatePaymentButtonForStrategy(strategyId, strategyName, chatId, amountToPay):
@@ -15,7 +16,38 @@ class Texts:
   def generatePaymentButton(name, orderId, amountToPay):
     buttonText = config.PAYMENTBUTTONURL
     buttonText = buttonText.replace("name=", "name=" + name).replace("order_id=", "order_id=" + orderId).replace("amount=","amount=" + str(amountToPay))
+    print("YYYYYYYYYYYYYYYYYYY")
+    print(buttonText)
+    print("YYYYYYYYYYYYYYYYYYY")
+
     return buttonText
+
+  @staticmethod
+  def generateCardPaymentButtonForStrategy(strategyId, strategyName, chatId, amountToPay):
+    orderId = "cid_" + str(chatId) + "_" + "stid_" + str(strategyId)
+    return Texts.generateCardPaymentButton(strategyName, orderId, amountToPay)
+
+  @staticmethod
+  def generateCardPaymentButtonForSignals(chatId, amountToPay):
+    orderId = "cid_" + str(chatId)
+    return Texts.generatePaymentButton("Сигналы", orderId, amountToPay)
+
+  @staticmethod
+  def generateCardPaymentButton(name, orderId, amountToPay):
+    buttonText = config.CARDPAYMENTBUTTONURL
+    buttonText = buttonText.replace("targets=", "targets=" + orderId).replace("default-sum=","default-sum=" + str(amountToPay))
+    print("XXXXXXXXXXXXXXXXXXX")
+    print(buttonText)
+    print("XXXXXXXXXXXXXXXXXXX")
+
+    return buttonText
+
+
+
+
+
+
+
 
   @staticmethod
   def getTextOnStart(firstName):
@@ -131,7 +163,7 @@ class Texts:
 5️⃣ Прогресс
 
 
-<b>Удачной торговли, друзья</b>
+<b>Удачной торговли, друзья.</b>
 
 """
 
