@@ -3,7 +3,7 @@ import botconfig as config
 import telegram
 from handlers import setHandlers
 import sys
-from paymentHandler import handlePayment
+from paymentHandler import handlePayment,hadleCardPayment
 from werkzeug.datastructures import ImmutableMultiDict
 import logging
 
@@ -39,6 +39,8 @@ def invoice():
 @app.route('/cardInvoice', methods=["POST", "GET"])
 def cardInvoice():
   try:
+    invoice = request.form.to_dict(flat=True)
+    hadleCardPayment(invoice)
     print('----Card Invoice-----', request.form)
     return ''
   except Exception as e:

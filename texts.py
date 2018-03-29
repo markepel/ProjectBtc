@@ -35,11 +35,8 @@ class Texts:
   @staticmethod
   def generateCardPaymentButton(name, orderId, amountToPay):
     buttonText = config.CARDPAYMENTBUTTONURL
-    buttonText = buttonText.replace("targets=", "targets=" + orderId).replace("default-sum=","default-sum=" + str(amountToPay))
-    print("XXXXXXXXXXXXXXXXXXX")
+    buttonText = buttonText.replace("targets=", "targets=" + name).replace("default-sum=","default-sum=" + str(amountToPay)).replace("label=","label=" + orderId)
     print(buttonText)
-    print("XXXXXXXXXXXXXXXXXXX")
-
     return buttonText
 
 

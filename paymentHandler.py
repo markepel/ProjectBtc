@@ -77,3 +77,42 @@ def getInvoiceForData(orderInfo):
 
 def strategyWasBought(invoiceForData):
   return len(invoiceForData) == 2
+
+def handleCardPayment(invoiceData):
+  print('invoiceData = {0}'.format(invoiceData))
+  amount = invoiceData['amount']
+  invoiceForData = getInvoiceForData(invoiceData['label'])
+  messageToSend = ""
+  paymentIsValid = checkCardPaymentValidity(invoiceData)
+
+  if paymentIsValid:
+    db = DBRepo()
+    if strategyWasBought(invoiceForData):  
+      strategyThatWasBought = Strategy.fromDbObject(db.get_strategy_by_id(invoiceForData['strategyId'])[0]) 
+      amountHadToBePaid = strategyThatWasBought.price
+      if int(float(amount)) >= int(float(amountHadToBePaid)):
+        print('Adding subscription to strategy')
+        db.add_subscription_for_strategy(invoiceForData['chatId'], invoiceForData['strategyId'])
+        messageToSend = Texts.getTextForSubscriptionForStrategy(strategyThatWasBought.name)
+      else:
+        messageToSend = "Сумма оплаты меньше суммы заказа. Стоимость - {0}, оплачено - {1}. Обратитесь в службу поддержки.".format(amountHadToBePaid, amount)
+
+    else: 
+      if int(float(amount)) >= int(float(config.SUBSCRIPTIONFORSIGNALSPRICE)):
+        db.add_subscription_for_signals(invoiceForData['chatId'])
+        messageToSend = Texts.getTextForSubscriptionForSignals()
+      else:
+        messageToSend = "Сумма оплаты меньше суммы заказа. Стоимость - {0}, оплачено - {1}. Обратитесь в службу поддержки.".format(config.SUBSCRIPTIONFORSIGNALSPRICE, amount)
+
+  else:
+    messageToSend = "Оплата недействительна. Обратитесь в службу поддержки."
+    bot.send_message(chat_id=invoiceForData['chatId'], text=messageToSend, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+
+def checkCardPaymentValidity(i):
+  stringToCheck = '{0}&{1}&{2}&{3}&{4}&{5}&{6}&{7}&{8}'.format(i['notification_type'], i['operation_id']
+    , i['amount'], i['currency'], i['datetime'], i['sender'], i['codepro']
+    , config.YSECRET, i['label']).encode('utf-8')
+  paymentHash = hashlib.sha1(stringToCheck).hexdigest()
+  if(i['sha1_hash'] == paymentHash):
+  return i['sha1_hash'] == paymentHash
+
