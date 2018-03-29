@@ -18,8 +18,6 @@ from publishSupportReplyConvHandler import get_publishreply_conv_handler
 from publishForAllConvHandler import get_publishforall_conv_handler
 
 
-logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 db = DBRepo()
 db.setup()
 handlers = []
@@ -27,9 +25,11 @@ reply_keyboard_main_menu = [['Стратегии 🏆'], ['Сигналы 💰']
 reply_keyboard_strategies = Menus.generateStrategiesMenu()
 strategyNamesRegex = Texts.generateRegexForStrategies(db.get_all_strategies_names())
 goBackTo = 'start'
+logger = logging.getLogger('btcLogger')
 
 
 def start(bot, update):
+  logger.info('New START!!!, new chat_id = {0}, from_user.id'.format(update.message.chat_id, update.message.from_user.id))
   bot.send_message(chat_id=update.message.chat_id, text=Texts.getTextOnStart(update.message.from_user.first_name), reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
   db = DBRepo()
   db.add_user(update.message.from_user.id, update.message.from_user.first_name)  
@@ -38,6 +38,7 @@ def cancelEmail(bot, update):
   bot.send_message(chat_id=update.message.chat_id, text="Обращение отменено.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
 
 def profile(bot, update):
+  logger.info('Getting profile for chat_id = {0}'.format(update.message.chat_id))
   db = DBRepo()
   activeStrategySubscriptions = db.get_active_subscriptions_for_strategies_by_user_id(int(update.message.chat_id))
   signalsSubscriptionsDb = db.get_active_subscriptions_for_signals_by_user_id(int(update.message.chat_id))
@@ -52,8 +53,10 @@ def profile(bot, update):
   bot.send_message(chat_id=update.message.chat_id, text=Texts.getTextForProfile(strategiesInfo, signalsSubscriptions), reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
 
 def signals(bot, update):
-  cryptoPaymentButton = [InlineKeyboardButton('Оплатить подписку криптовалютой. Стоимость - ' + str(config.SUBSCRIPTIONFORSIGNALSPRICE) + '₽', callback_data='buy-signals', url = Texts.generatePaymentButtonForSignals(update.message.chat_id, config.SUBSCRIPTIONFORSIGNALSPRICE))]
-  cardPaymentButton = [InlineKeyboardButton('Оплатить картой. Стоимость - ' + str(config.SUBSCRIPTIONFORSIGNALSPRICE) + '₽', callback_data='buy-signals', url = Texts.generateCardPaymentButtonForSignals(update.message.chat_id, config.SUBSCRIPTIONFORSIGNALSPRICE))]
+  # cryptoPaymentButton = [InlineKeyboardButton('Оплатить подписку криптовалютой. Стоимость - ' + str(config.SUBSCRIPTIONFORSIGNALSPRICE) + '₽', callback_data='buy-signals', url = Texts.generatePaymentButtonForSignals(update.message.chat_id, config.SUBSCRIPTIONFORSIGNALSPRICE))]
+  # cardPaymentButton = [InlineKeyboardButton('Оплатить картой. Стоимость - ' + str(config.SUBSCRIPTIONFORSIGNALSPRICE) + '₽', callback_data='buy-signals', url = Texts.generateCardPaymentButtonForSignals(update.message.chat_id, config.SUBSCRIPTIONFORSIGNALSPRICE))]
+  cryptoPaymentButton = [InlineKeyboardButton('Оплатить криптовалютой', callback_data='buy-signals', url = Texts.generatePaymentButtonForSignals(update.message.chat_id, config.SUBSCRIPTIONFORSIGNALSPRICE))]
+  cardPaymentButton = [InlineKeyboardButton('Оплатить картой', callback_data='buy-signals', url = Texts.generateCardPaymentButtonForSignals(update.message.chat_id, config.SUBSCRIPTIONFORSIGNALSPRICE))]
   keyboard = [cryptoPaymentButton, cardPaymentButton]
   bot.send_message(chat_id=update.message.chat_id, text=Texts.getTextForSignals(), reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=telegram.ParseMode.HTML)
 
@@ -74,8 +77,11 @@ def contacts(bot, update):
 def strategy(bot, update):
   db = DBRepo()
   strategyItself = Strategy.fromDbObject(db.get_strategy_by_name(update.message.text)[0])
-  cryptoPaymentButton = [InlineKeyboardButton('Оплатить криптовалютой. Стоимость - ' + str(strategyItself.price) + '₽', callback_data='buy-s_name=' + strategyItself.name, url = Texts.generatePaymentButtonForStrategy(strategyItself.id, strategyItself.name, update.message.chat_id, strategyItself.price))]
-  cardPaymentButton = [InlineKeyboardButton('Оплатить картой. Стоимость - ' + str(strategyItself.price) + '₽', callback_data='buy-s_name=' + strategyItself.name, url = Texts.generateCardPaymentButtonForStrategy(strategyItself.id, strategyItself.name, update.message.chat_id, strategyItself.price))]
+  # cryptoPaymentButton = [InlineKeyboardButton('Оплатить криптовалютой. Стоимость - ' + str(strategyItself.price) + '₽', callback_data='buy-s_name=' + strategyItself.name, url = Texts.generatePaymentButtonForStrategy(strategyItself.id, strategyItself.name, update.message.chat_id, strategyItself.price))]
+  # cardPaymentButton = [InlineKeyboardButton('Оплатить картой. Стоимость - ' + str(strategyItself.price) + '₽', callback_data='buy-s_name=' + strategyItself.name, url = Texts.generateCardPaymentButtonForStrategy(strategyItself.id, strategyItself.name, update.message.chat_id, strategyItself.price))]
+  cryptoPaymentButton = [InlineKeyboardButton('Оплатить криптовалютой', callback_data='buy-s_name=' + strategyItself.name, url = Texts.generatePaymentButtonForStrategy(strategyItself.id, strategyItself.name, update.message.chat_id, strategyItself.price))]
+  cardPaymentButton = [InlineKeyboardButton('Оплатить картой', callback_data='buy-s_name=' + strategyItself.name, url = Texts.generateCardPaymentButtonForStrategy(strategyItself.id, strategyItself.name, update.message.chat_id, strategyItself.price))]
+  
   keyboard = [cryptoPaymentButton, cardPaymentButton]
   bot.send_message(chat_id=update.message.chat_id, text=strategyItself.description, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=telegram.ParseMode.HTML)
 

@@ -6,11 +6,9 @@ import botconfig as config
 import smtplib
 from email.message import EmailMessage
 
-
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
 anyTextPattern = "^(?![/cancel])^(?!\s*$).+"
 cancelTextPattern = '^(Отменить обращение)$'
+logger = logging.getLogger('btcLogger')
 
 reply_keyboard_main_menu = [['Стратегии 🏆'], ['Сигналы 💰'], ['Материалы 📂','Служба поддержки 📞'], ['Личный кабинет 🔐']]
 
@@ -18,19 +16,24 @@ SENDEMAIL, CANCELEMAIL = range(2)
 
 def email(bot, update):
   keyboard = [['Отменить обращение']]
+  logger.info('Someone starts writing to support. Chat id = {0}'.format(update.message.chat_id))
   bot.send_message(chat_id=update.callback_query.message.chat.id, text="Введите ваше обращение. Если вы хотите получить ответ не в боте, а по email, укажите его адрес в теле обращения, пожалуйста:", reply_markup = ReplyKeyboardMarkup(keyboard))
   return SENDEMAIL
  
 def sendEmail(bot, update):
   if update.message.text == "Отменить обращение":
+    logger.info('Chat id = {0} canceled his support request'.format(update.message.chat_id))
     bot.send_message(chat_id=update.message.chat_id, text="Обращение в службу поддержки отменено.", reply_markup = ReplyKeyboardMarkup(reply_keyboard_main_menu))
   else:
     sendEmail(update.message.text + '\n chat_id = {0}'.format(update.message.chat_id))
     bot.send_message(chat_id=update.message.chat_id, text="Ваше обращение принято к рассмотрению.", reply_markup = ReplyKeyboardMarkup(reply_keyboard_main_menu))
+    logger.info('Chat id = {0} successfully finished his support request'.format(update.message.chat_id))
   return ConversationHandler.END
 
 def cancel(bot, update):
   bot.send_message(chat_id=update.message.chat_id, text="Обращение в службу поддержки отменено.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True))
+  logger.info('Chat id = {0} canceled his support request'.format(update.message.chat_id))
+
   return ConversationHandler.END
 
 support_conv_handler = ConversationHandler(

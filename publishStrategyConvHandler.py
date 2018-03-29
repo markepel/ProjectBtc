@@ -10,8 +10,6 @@ from texts import Texts
 from publishStrategyInfo import PublishStrategyInfo
 import time
 
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
 db = DBRepo()
 reply_keyboard_main_menu = [['Стратегии 🏆'], ['Сигналы 💰'], ['Материалы 📂','Служба поддержки 📞'], ['Личный кабинет 🔐']]
 reply_keyboard_strategies = Menus.generateStrategiesMenu()
@@ -19,11 +17,12 @@ strategyNamesRegex = Texts.generateRegexForStrategies(db.get_all_strategies_name
 finishPattern = '^(/finish)$'
 anyTextPattern = "^(?![/cancel])^(?!\s*$).+"
 strategy_state = {}
-
+logger = logging.getLogger('btcLogger')
 
 PASSWORD, CHOOSESTRATEGY, GETPHOTO, GETTEXT, FINISH = range(5)
 
 def publishStrategy(bot, update):
+  logger.info('publishStrategy starts for chat_id {0}'.format(update.message.chat_id))
   bot.send_message(chat_id=update.message.chat_id, text="Введите, пожалуйста, пароль:")
   return PASSWORD
  
@@ -54,11 +53,12 @@ def text(bot, update):
   return FINISH
 
 def finish(bot, update):
+  logger.info('publishStrategy finish starts for chat_id {0}'.format(update.message.chat_id))
   db = DBRepo()
   global strategy_state
   strategyName = strategy_state[update.message.chat_id].strategyName
   idsToPublishBig = db.get_active_subscribers_ids_for_strategy_by_name(strategyName)
-
+  logger.info('idsToPublishBig - {0}'.format(idsToPublishBig))
   for idsToPublish in idsToPublishBig:
     for id in idsToPublish:
       text = """
@@ -70,6 +70,7 @@ def finish(bot, update):
       time.sleep(0.04)
 
   bot.send_message(chat_id=update.message.chat_id, text="Публикация стратегии разослана подписантам.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+  logger.info('publishStrategy finished successfully for chat_id {0}. Strategy = '.format(update.message.chat_id, strategy_state[update.message.chat_id]))
   del strategy_state[update.message.chat_id]
   return ConversationHandler.END
 

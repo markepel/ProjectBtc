@@ -21,7 +21,7 @@ class DBRepo:
 
   def add_user(self, id, firstName):
     dateOfCreationUnix = (datetime.datetime.utcnow() - datetime.datetime(1970,1,1)).total_seconds()
-    stmt = "INSERT INTO users (id , first_name, registered_on) VALUES (?, ?, ?)"
+    stmt = "INSERT OR IGNORE INTO users (id , first_name, registered_on) VALUES (?, ?, ?)"
     args = (id, firstName, dateOfCreationUnix)
     self.conn.execute(stmt, args)
     self.conn.commit()
@@ -61,7 +61,7 @@ class DBRepo:
   def get_active_subscribers_ids_for_strategy_by_name(self, name):
     validDateOfPurchase = time.time() - config.MONTHINSECONDS
 
-    stmt = """SELECT subscriptions_for_strategies.u_id from subscriptions_for_strategies 
+    stmt = """SELECT DISTINCT subscriptions_for_strategies.u_id from subscriptions_for_strategies 
     inner join strategies on strategies.id = subscriptions_for_strategies.s_id 
     where strategies.name = (?) and subscriptions_for_strategies.date_of_purchase > (?)
     """
@@ -159,7 +159,7 @@ class DBRepo:
 
   def get_all_active_subscriptions_ids_for_signals(self):
     validDateOfPurchase = time.time() - config.MONTHINSECONDS
-    stmt = "SELECT u_id FROM subscriptions_for_signals WHERE  date_of_purchase > (?)"
+    stmt = "SELECT DISTINCT u_id FROM subscriptions_for_signals WHERE  date_of_purchase > (?)"
     args = (validDateOfPurchase, )
     res = self.conn.execute(stmt, args)
     self.conn.commit()

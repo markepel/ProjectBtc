@@ -11,10 +11,10 @@ import hashlib
 TOKEN = config.TOKEN
 bot = telegram.Bot(token=TOKEN)
 reply_keyboard_main_menu = [['Стратегии 🏆'], ['Сигналы 💰'], ['Материалы 📂','Служба поддержки 📞'], ['Личный кабинет 🔐']]
-
+logger = logging.getLogger('btcLogger')
 
 def handlePayment(invoiceData):
-  print('invoiceData = {0}'.format(invoiceData))
+  logger.info("handlePayment method, invoice data = {0}".format(invoiceData))
   status = invoiceData['invoice_status']
   amount = invoiceData['invoice_amount']
   invoiceForData = getInvoiceForData(invoiceData['order_id'])
@@ -79,7 +79,8 @@ def strategyWasBought(invoiceForData):
   return len(invoiceForData) == 2
 
 def handleCardPayment(invoiceData):
-  print('invoiceData = {0}'.format(invoiceData))
+  logger.info("handleCardPayment method, invoice data = {0}".format(invoiceData))
+  print('invoiceDataCARD = {0}'.format(invoiceData))
   amount = invoiceData['amount']
   invoiceForData = getInvoiceForData(invoiceData['label'])
   messageToSend = ""
@@ -114,5 +115,5 @@ def checkCardPaymentValidity(i):
     , config.YSECRET, i['label']).encode('utf-8')
   paymentHash = hashlib.sha1(stringToCheck).hexdigest()
   if(i['sha1_hash'] == paymentHash):
-  return i['sha1_hash'] == paymentHash
+    return i['sha1_hash'] == paymentHash
 

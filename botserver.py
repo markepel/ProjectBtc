@@ -17,13 +17,19 @@ context = (CERT, CERT_KEY)
 bot = telegram.Bot(TOKEN)
 dp = telegram.ext.Dispatcher(bot, None)
 setHandlers(dp)
+setUpLoggers()
+logger = logging.getLogger('btcLogger')
 
 app = Flask(__name__)
  
 @app.route("/", methods=["POST", "GET"])
 def webhook():
-  update = telegram.update.Update.de_json(request.get_json(force=True),bot)
-  dp.process_update(update)
+  try:
+    update = telegram.update.Update.de_json(request.get_json(force=True),bot)
+    dp.process_update(update)
+  except Exception as e:
+    logger.error("An error occured handling webhook when request was - \n {0}".format(request.get_json(force=True)))  
+    logger.error("Error itself = \n {0}".format(str(e))
   return ''
 
 @app.route('/invoice', methods=["POST", "GET"])
@@ -34,7 +40,8 @@ def invoice():
     print('----Invoice-----', request.form)
     return ''
   except Exception as e:
-    print('----Invoice-----', request.form)
+    logger.error("An error occured handling invoice when request was - \n {0}".format(request.form))  
+    logger.error("Invoice Error itself = \n {0}".format(str(e))
 
 @app.route('/cardInvoice', methods=["POST", "GET"])
 def cardInvoice():
@@ -44,8 +51,17 @@ def cardInvoice():
     print('----Card Invoice-----', request.form)
     return ''
   except Exception as e:
-    print('----Invoice-----', request.form)
+    logger.error("An error occured handling card invoice when request was - \n {0}".format(request.form))  
+    logger.error("Card Invoice Error itself = \n {0}".format(str(e))
 
+def setUpLoggers():
+  formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+  logger = logging.getLogger('btcLogger')
+  logger.setLevel(logging.INFO)
+  fh = logging.handlers.TimedRotatingFileHandler(filename = config.LOGPATH, when='d', interval=7, backupCount=3)
+  fh.setLevel(logging.INFO)
+  fh.setFormatter(formatter)
+  logger.addHandler(fh)  
 
 if __name__ == '__main__':
   app.run(host='0.0.0.0', port=PORT, ssl_context=context)

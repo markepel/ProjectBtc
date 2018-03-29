@@ -5,19 +5,17 @@ import logging
 from dbrepo import DBRepo
 import botconfig as config
 
-
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
 reply_keyboard_main_menu = [['Стратегии 🏆'], ['Сигналы 💰'], ['Материалы 📂','Служба поддержки 📞'], ['Личный кабинет 🔐']]
 finishPattern = '^(/finish)$'
 anyTextPattern = "^(?![/cancel])^(?!\s*$).+"
 onlyDigitsPattern = "^\d+$"
 reply_state = {}
-
+logger = logging.getLogger('btcLogger')
 
 PASSWORD, GETTEXT, GETCHATID, FINISH = range(4)
 
 def publishReply(bot, update):
+  logger.info('publishReply starts for chat_id {0}'.format(update.message.chat_id))
   bot.send_message(chat_id=update.message.chat_id, text="Введите, пожалуйста, пароль:")
   return PASSWORD
  
@@ -34,6 +32,7 @@ def text(bot, update):
 def chatId(bot, update):
   global reply_state
   reply_state["chatid_for_{0}".format(update.message.chat_id)] = update.message.text
+  logger.info('publishReply sends to user with id {0}'.format(update.message.text))
   bot.send_message(chat_id=update.message.chat_id, text="Введите /finish для завершения и публикации или /cancel для отмены.")
   return FINISH
 
@@ -42,6 +41,7 @@ def finish(bot, update):
   bot.send_message(chat_id=reply_state["chatid_for_{0}".format(update.message.chat_id)], text="<b>Ответ от службы поддержки:</b> \n {0}".format(reply_state["text_for_{0}".format(update.message.chat_id)]), reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
   bot.send_message(chat_id=update.message.chat_id, text="Ответ отправлен.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
   del reply_state["chatid_for_{0}".format(update.message.chat_id)]
+  logger.info('publishReply finished successfully. Reply = {0}'.format(reply_state["text_for_{0}".format(update.message.chat_id)]))
   del reply_state["text_for_{0}".format(update.message.chat_id)]
 
 

@@ -16,9 +16,6 @@ class Texts:
   def generatePaymentButton(name, orderId, amountToPay):
     buttonText = config.PAYMENTBUTTONURL
     buttonText = buttonText.replace("name=", "name=" + name).replace("order_id=", "order_id=" + orderId).replace("amount=","amount=" + str(amountToPay))
-    print("YYYYYYYYYYYYYYYYYYY")
-    print(buttonText)
-    print("YYYYYYYYYYYYYYYYYYY")
 
     return buttonText
 
