@@ -30,7 +30,8 @@ def webhook():
   except Exception as e:
     logger.error("An error occured handling webhook when request was - \n {0}".format(request.get_json(force=True)))  
     logger.error("Error itself = \n {0}".format(str(e))
-  return ''
+  finally:
+    return ''
 
 @app.route('/invoice', methods=["POST", "GET"])
 def invoice():
@@ -38,10 +39,11 @@ def invoice():
     invoice = request.form.to_dict(flat=True)
     handlePayment(invoice)
     print('----Invoice-----', request.form)
-    return ''
   except Exception as e:
     logger.error("An error occured handling invoice when request was - \n {0}".format(request.form))  
     logger.error("Invoice Error itself = \n {0}".format(str(e))
+  finally:
+    return ''
 
 @app.route('/cardInvoice', methods=["POST", "GET"])
 def cardInvoice():
@@ -49,10 +51,11 @@ def cardInvoice():
     invoice = request.form.to_dict(flat=True)
     hadleCardPayment(invoice)
     print('----Card Invoice-----', request.form)
-    return ''
   except Exception as e:
     logger.error("An error occured handling card invoice when request was - \n {0}".format(request.form))  
     logger.error("Card Invoice Error itself = \n {0}".format(str(e))
+  finally:
+    return ''
 
 def setUpLoggers():
   formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
