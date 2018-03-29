@@ -7,6 +7,15 @@ from paymentHandler import handlePayment, handleCardPayment
 from werkzeug.datastructures import ImmutableMultiDict
 import logging
 
+def setUpLoggers():
+  formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+  logger = logging.getLogger('btcLogger')
+  logger.setLevel(logging.INFO)
+  fh = logging.handlers.TimedRotatingFileHandler(filename = config.LOGPATH, when='d', interval=7, backupCount=3)
+  fh.setLevel(logging.INFO)
+  fh.setFormatter(formatter)
+  logger.addHandler(fh)  
+
 TOKEN = config.TOKEN
 HOST = config.HOST
 CERT = "/etc/letsencrypt/live/chaispechenkoi.club/fullchain.pem"
@@ -56,15 +65,6 @@ def cardInvoice():
     logger.error("Card Invoice Error itself = \n {0}".format(str(e)))
   finally:
     return ''
-
-def setUpLoggers():
-  formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-  logger = logging.getLogger('btcLogger')
-  logger.setLevel(logging.INFO)
-  fh = logging.handlers.TimedRotatingFileHandler(filename = config.LOGPATH, when='d', interval=7, backupCount=3)
-  fh.setLevel(logging.INFO)
-  fh.setFormatter(formatter)
-  logger.addHandler(fh)  
 
 if __name__ == '__main__':
   app.run(host='0.0.0.0', port=PORT, ssl_context=context)
