@@ -110,6 +110,11 @@ class Texts:
 """.format(strategyName)
 
   @staticmethod
+  def getFirstLinkText():
+    return """http://telegra.ph/7-pravila-risk-menedzhmenta-pri-torgovle-kriptovalyutami-03-25"""
+
+
+  @staticmethod
   def getTextForProfile(strategyNamesAndExpireDatesDict, isSubscribedOnSignalsAndExpireDateDict):
     print('isSubscribedOnSignalsAndExpireDateDict - ', isSubscribedOnSignalsAndExpireDateDict)
     strategiesText = "<b>Стратегии:</b>\n"

@@ -20,6 +20,7 @@ def handlePayment(invoiceData):
   invoiceForData = getInvoiceForData(invoiceData['order_id'])
   messageToSend = ""
   paymentIsValid = checkPaymentValidity(invoiceData)
+  everythingIsFine = False
 
   if paymentIsValid:
     db = DBRepo()
@@ -33,15 +34,16 @@ def handlePayment(invoiceData):
           print('Adding subscription to strategy')
           db.add_subscription_for_strategy(invoiceForData['chatId'], invoiceForData['strategyId'])
           messageToSend = Texts.getTextForSubscriptionForStrategy(strategyThatWasBought.name)
+          everythingIsFine = True
         else:
           messageToSend = "Сумма оплаты меньше суммы заказа. Стоимость - {0}, оплачено - {1}. Обратитесь в службу поддержки.".format(amountHadToBePaid, amount)
 
       else: 
-
         if int(float(amount)) >= int(float(config.SUBSCRIPTIONFORSIGNALSPRICE)):
           print('Adding subscription to signals'.format(status))
           db.add_subscription_for_signals(invoiceForData['chatId'])
           messageToSend = Texts.getTextForSubscriptionForSignals()
+          everythingIsFine = True
         else:
           messageToSend = "Сумма оплаты меньше суммы заказа. Стоимость - {0}, оплачено - {1}. Обратитесь в службу поддержки.".format(config.SUBSCRIPTIONFORSIGNALSPRICE, amount)
 
@@ -52,7 +54,7 @@ def handlePayment(invoiceData):
         db.delete_subscription_for_strategy(invoiceForData['chatId'], invoiceForData['strategyId'])       
       else:
         db.delete_subscription_for_signals(invoiceForData['chatId'])
-    bot.send_message(chat_id=invoiceForData['chatId'], text=messageToSend, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+    sendResultMessagesToUser(invoiceForData['chatId'], messageToSend, everythingIsFine)
   else:
     messageToSend = "Оплата недействительна. Обратитесь в службу поддержки."
     bot.send_message(chat_id=invoiceForData['chatId'], text=messageToSend, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
@@ -85,6 +87,7 @@ def handleCardPayment(invoiceData):
   invoiceForData = getInvoiceForData(invoiceData['label'])
   messageToSend = ""
   paymentIsValid = checkCardPaymentValidity(invoiceData)
+  everythingIsFine = False
 
   if paymentIsValid:
     db = DBRepo()
@@ -95,6 +98,7 @@ def handleCardPayment(invoiceData):
         print('Adding subscription to strategy')
         db.add_subscription_for_strategy(invoiceForData['chatId'], invoiceForData['strategyId'])
         messageToSend = Texts.getTextForSubscriptionForStrategy(strategyThatWasBought.name)
+        everythingIsFine = True
       else:
         messageToSend = "Сумма оплаты меньше суммы заказа. Стоимость - {0}, оплачено - {1}. Обратитесь в службу поддержки.".format(amountHadToBePaid, amount)
 
@@ -102,8 +106,11 @@ def handleCardPayment(invoiceData):
       if int(float(amount)) >= int(float(config.SUBSCRIPTIONFORSIGNALSPRICE)):
         db.add_subscription_for_signals(invoiceForData['chatId'])
         messageToSend = Texts.getTextForSubscriptionForSignals()
+        everythingIsFine = True
+
       else:
         messageToSend = "Сумма оплаты меньше суммы заказа. Стоимость - {0}, оплачено - {1}. Обратитесь в службу поддержки.".format(config.SUBSCRIPTIONFORSIGNALSPRICE, amount)
+    sendResultMessagesToUser(invoiceForData['chatId'], messageToSend, everythingIsFine)
 
   else:
     messageToSend = "Оплата недействительна. Обратитесь в службу поддержки."
@@ -116,4 +123,10 @@ def checkCardPaymentValidity(i):
   paymentHash = hashlib.sha1(stringToCheck).hexdigest()
   if(i['sha1_hash'] == paymentHash):
     return i['sha1_hash'] == paymentHash
+
+def sendResultMessagesToUser(chatId, message, everythingIsFine):
+  bot.send_message(chat_id=chatId, text=message, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+  if(everythingIsFine):
+    bot.send_message(chat_id=chatId, text=Texts.getFirstLinkText(), reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+
 
