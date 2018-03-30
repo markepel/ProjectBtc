@@ -12,7 +12,7 @@ anyTextPattern = "^(?![/cancel])^(?!\s*$).+"
 signal_state = {}
 logger = logging.getLogger('btcLogger')
 
-PASSWORD, GETTEXT, FINISH = range(3)
+PASSWORD, GETPHOTO, GETTEXT, FINISH = range(4)
 
 def publishSignal(bot, update):
   logger.info('publishSignal starts for chat_id {0}'.format(update.message.chat_id))
@@ -20,7 +20,14 @@ def publishSignal(bot, update):
   return PASSWORD
  
 def password(bot, update):
-  bot.send_message(chat_id=update.message.chat_id, text="Выберите текст сигнала:", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+  bot.send_message(chat_id=update.message.chat_id, text="Картинка для публикации:", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+  return GETPHOTO
+
+def photo(bot, update):
+  global signal_state
+  signal_state["photoId_for_{0}".format(update.message.chat_id)] = update.message.photo[-1].file_id
+
+  bot.send_message(chat_id=update.message.chat_id, text="Введите текст для публикации:")
   return GETTEXT
 
 def text(bot, update):
@@ -30,20 +37,23 @@ def text(bot, update):
   return FINISH
 
 def finish(bot, update):
-  logger.info('publishSignal finish starts for chat_id {0}'.format(update.message.chat_id))
+  chatId = update.message.chat_id
+  logger.info('publishSignal finish starts for chat_id {0}'.format(chatId))
   db = DBRepo()
   idsToPublishBig = db.get_all_active_subscriptions_ids_for_signals()
   logger.info('idsToPublishBig - {0}'.format(idsToPublishBig))
   global signal_state
-  text = """<b>Сигнал: </b>
-{0}""".format(signal_state["text_for_{0}".format(update.message.chat_id)])
+  text = """Сигнал:
+{0}""".format(signal_state["text_for_{0}".format(chatId)])
+  photoId = signal_state["photoId_for_{0}".format(chatId)]
   for idsToPublish in idsToPublishBig:
     id = idsToPublish[0]
-    bot.send_message(chat_id=id, text=text, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+    bot.send_photo(chat_id=id, photo=photoId, caption = text, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
     time.sleep(0.03)
-  bot.send_message(chat_id=update.message.chat_id, text="Сигнал разослан подписантам.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
-  logger.info('publishSignal finished successfully for chat_id {0}. Signal - {1}'.format(update.message.chat_id, signal_state["text_for_{0}".format(update.message.chat_id)]))
+  bot.send_message(chat_id=chatId, text="Сигнал разослан подписантам.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+  logger.info('publishSignal finished successfully for chat_id {0}. Signal - {1}'.format(chatId, signal_state["text_for_{0}".format(chatId)]))
   del signal_state["text_for_{0}".format(update.message.chat_id)]
+  del signal_state["photoId_for_{0}".format(update.message.chat_id)]
 
   return ConversationHandler.END
 
@@ -59,6 +69,7 @@ publishsignal_conv_handler = ConversationHandler(
   entry_points=[CommandHandler('publishsignal', publishSignal)],
   states={
   PASSWORD: [RegexHandler(config.MANAGERPASS, password)],
+  GETPHOTO: [MessageHandler(Filters.photo, photo)],
   GETTEXT: [RegexHandler(anyTextPattern, text)],
   FINISH: [RegexHandler(finishPattern, finish)]
   },
