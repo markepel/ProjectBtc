@@ -27,7 +27,7 @@ class Texts:
   @staticmethod
   def generateCardPaymentButtonForSignals(chatId, amountToPay):
     orderId = "cid_" + str(chatId)
-    return Texts.generatePaymentButton("Сигналы", orderId, amountToPay)
+    return Texts.generateCardPaymentButton("Сигналы", orderId, amountToPay)
 
   @staticmethod
   def generateCardPaymentButton(name, orderId, amountToPay):
