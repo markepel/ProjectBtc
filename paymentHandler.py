@@ -84,7 +84,9 @@ def handleCardPayment(invoiceData):
   logger.info("handleCardPayment method, invoice data = {0}".format(invoiceData))
   print('invoiceDataCARD = {0}'.format(invoiceData))
   amount = invoiceData['amount']
+  print('amountCARD = {0}'.format(invoiceData))
   invoiceForData = getInvoiceForData(invoiceData['label'])
+  print('invoiceForDataCARD = {0}'.format(invoiceData))
   messageToSend = ""
   paymentIsValid = checkCardPaymentValidity(invoiceData)
   everythingIsFine = False
@@ -99,6 +101,7 @@ def handleCardPayment(invoiceData):
         db.add_subscription_for_strategy(invoiceForData['chatId'], invoiceForData['strategyId'])
         messageToSend = Texts.getTextForSubscriptionForStrategy(strategyThatWasBought.name)
         everythingIsFine = True
+        print('everythingIsFine = {0}'.format(everythingIsFine))
       else:
         messageToSend = "Сумма оплаты меньше суммы заказа. Стоимость - {0}, оплачено - {1}. Обратитесь в службу поддержки.".format(amountHadToBePaid, amount)
 
@@ -106,6 +109,7 @@ def handleCardPayment(invoiceData):
       if int(float(amount)) >= int(float(config.SUBSCRIPTIONFORSIGNALSPRICE)):
         db.add_subscription_for_signals(invoiceForData['chatId'])
         messageToSend = Texts.getTextForSubscriptionForSignals()
+        print('everythingIsFine2 = {0}'.format(everythingIsFine))
         everythingIsFine = True
 
       else:
@@ -121,6 +125,9 @@ def checkCardPaymentValidity(i):
     , i['amount'], i['currency'], i['datetime'], i['sender'], i['codepro']
     , config.YSECRET, i['label']).encode('utf-8')
   paymentHash = hashlib.sha1(stringToCheck).hexdigest()
+  print('paymentHashCARD = {0}'.format(invoiceData))
+  print('i["sha1_hash"] = {0}'.format(invoiceData))
+
   if(i['sha1_hash'] == paymentHash):
     return i['sha1_hash'] == paymentHash
 
