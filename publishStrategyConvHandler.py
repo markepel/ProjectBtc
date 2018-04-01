@@ -16,6 +16,7 @@ reply_keyboard_strategies = Menus.generateStrategiesMenu()
 strategyNamesRegex = Texts.generateRegexForStrategies(db.get_all_strategies_names())
 finishPattern = '^(/finish)$'
 anyTextPattern = "^(?![/cancel])^(?!\s*$).+"
+global strategy_state 
 strategy_state = {}
 logger = logging.getLogger('btcLogger')
 
@@ -77,7 +78,8 @@ def finish(bot, update):
 def cancel(bot, update):
   global strategy_state
   bot.send_message(chat_id=update.message.chat_id, text="Отмена публикации", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
-  del strategy_state[update.message.chat_id]
+  if update.message.chat_id in signal_state:
+    del strategy_state[update.message.chat_id]
   return ConversationHandler.END
 
 publishstrategy_conv_handler = ConversationHandler(

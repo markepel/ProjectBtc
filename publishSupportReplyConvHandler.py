@@ -9,6 +9,7 @@ reply_keyboard_main_menu = [['Стратегии 🏆'], ['Сигналы 💰']
 finishPattern = '^(/finish)$'
 anyTextPattern = "^(?![/cancel])^(?!\s*$).+"
 onlyDigitsPattern = "^\d+$"
+global reply_state
 reply_state = {}
 logger = logging.getLogger('btcLogger')
 

@@ -9,6 +9,7 @@ import time
 reply_keyboard_main_menu = [['Стратегии 🏆'], ['Сигналы 💰'], ['Материалы 📂','Служба поддержки 📞'], ['Личный кабинет 🔐']]
 finishPattern = '^(/finish)$'
 anyTextPattern = "^(?![/cancel])^(?!\s*$).+"
+global signal_state
 signal_state = {}
 logger = logging.getLogger('btcLogger')
 
@@ -62,7 +63,9 @@ def cancel(bot, update):
   global signal_state
   if "text_for_{0}".format(update.message.chat_id) in signal_state:
     del signal_state["text_for_{0}".format(update.message.chat_id)]
- 
+  if "photoId_for_{0}".format(update.message.chat_id) in signal_state:
+    del signal_state["photoId_for_{0}".format(update.message.chat_id)]
+
   return ConversationHandler.END
 
 publishsignal_conv_handler = ConversationHandler(

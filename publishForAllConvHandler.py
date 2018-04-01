@@ -12,6 +12,7 @@ db = DBRepo()
 reply_keyboard_main_menu = [['Стратегии 🏆'], ['Сигналы 💰'], ['Материалы 📂','Служба поддержки 📞'], ['Личный кабинет 🔐']]
 finishPattern = '^(/finish)$'
 anyTextPattern = "^(?![/cancel])^(?!\s*$).+"
+global forAll_state
 forAll_state = {}
 logger = logging.getLogger('btcLogger')
 
@@ -48,13 +49,15 @@ def finish(bot, update):
       db.delete_user(id)
 
   logger.info('PublishForAll finished for chat_id {0} successfully'.format(update.message.chat_id))
+  del forAll_state[update.message.chat_id]
   bot.send_message(chat_id=update.message.chat_id, text="Публикация для всех юзеров разослана.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
   return ConversationHandler.END
 
 def cancel(bot, update):
   global forAll_state
   bot.send_message(chat_id=update.message.chat_id, text="Отмена публикации", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
-  del forAll_state[update.message.chat_id]
+  if update.message.chat_id in forAll_state:
+    del forAll_state[update.message.chat_id]
   return ConversationHandler.END
 
 publishforall_conv_handler = ConversationHandler(
