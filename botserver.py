@@ -7,6 +7,7 @@ from paymentHandler import handlePayment, handleCardPayment
 from werkzeug.datastructures import ImmutableMultiDict
 import logging
 import logging.handlers
+import traceback
 
 def setUpLoggers():
   formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
@@ -38,7 +39,7 @@ def webhook():
     update = telegram.update.Update.de_json(request.get_json(force=True),bot)
     dp.process_update(update)
   except:
-    e = sys.exc_info()[0]
+    e = traceback.format_exc()
     logger.error("An error occured handling webhook when request was - \n {0}".format(request.get_json(force=True)))  
     logger.error("Error itself = \n {0}".format(str(e)))
   finally:
@@ -51,7 +52,7 @@ def invoice():
     handlePayment(invoice)
     print('----Invoice-----', request.form)
   except:
-    e = sys.exc_info()[0]
+    e = traceback.format_exc()
     logger.error("An error occured handling invoice when request was - \n {0}".format(request.form))  
     logger.error("Invoice Error itself = \n {0}".format(str(e)))
   finally:
@@ -64,7 +65,7 @@ def cardInvoice():
     handleCardPayment(invoice)
     print('----Card Invoice-----', request.form)
   except:
-    e = sys.exc_info()[0]
+    e = traceback.format_exc()
     logger.error("An error occured handling card invoice when request was - \n {0}".format(request.form))  
     logger.error("Card Invoice Error itself = \n {0}".format(str(e)))
   finally:
