@@ -57,15 +57,16 @@ def invoice():
 
 @app.route('/cardInvoice', methods=["POST", "GET"])
 def cardInvoice():
-  try:
-    invoice = request.form.to_dict(flat=True)
-    hadleCardPayment(invoice)
-    print('----Card Invoice-----', request.form)
-  except Exception as e:
-    logger.error("An error occured handling card invoice when request was - \n {0}".format(request.form))  
-    logger.error("Card Invoice Error itself = \n {0}".format(str(e)))
-  finally:
-    return ''
+  # try:
+  invoice = request.form.to_dict(flat=True)
+  handleCardPayment(invoice)
+  print('----Card Invoice-----', request.form)
+  # except Exception as e:
+  #   logger.error("An error occured handling card invoice when request was - \n {0}".format(request.form))  
+  #   logger.error("Card Invoice Error itself = \n {0}".format(str(e)))
+  #finally:
+  #  return ''
+  return ''
 
 if __name__ == '__main__':
   app.run(host='0.0.0.0', port=PORT, ssl_context=context)
