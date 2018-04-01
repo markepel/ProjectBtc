@@ -37,7 +37,8 @@ def webhook():
   try:
     update = telegram.update.Update.de_json(request.get_json(force=True),bot)
     dp.process_update(update)
-  except Exception as e:
+  except:
+    e = sys.exc_info()[0]
     logger.error("An error occured handling webhook when request was - \n {0}".format(request.get_json(force=True)))  
     logger.error("Error itself = \n {0}".format(str(e)))
   finally:
@@ -49,7 +50,8 @@ def invoice():
     invoice = request.form.to_dict(flat=True)
     handlePayment(invoice)
     print('----Invoice-----', request.form)
-  except Exception as e:
+  except:
+    e = sys.exc_info()[0]
     logger.error("An error occured handling invoice when request was - \n {0}".format(request.form))  
     logger.error("Invoice Error itself = \n {0}".format(str(e)))
   finally:
@@ -57,16 +59,15 @@ def invoice():
 
 @app.route('/cardInvoice', methods=["POST", "GET"])
 def cardInvoice():
-  # try:
-  invoice = request.form.to_dict(flat=True)
-  handleCardPayment(invoice)
-  print('----Card Invoice-----', request.form)
-  # except Exception as e:
-  #   logger.error("An error occured handling card invoice when request was - \n {0}".format(request.form))  
-  #   logger.error("Card Invoice Error itself = \n {0}".format(str(e)))
-  #finally:
-  #  return ''
-  return ''
+  try:
+    invoice = request.form.to_dict(flat=True)
+    handleCardPayment(invoice)
+    print('----Card Invoice-----', request.form)
+  except:
+    logger.error("An error occured handling card invoice when request was - \n {0}".format(request.form))  
+    logger.error("Card Invoice Error itself = \n {0}".format(str(e)))
+  finally:
+    return ''
 
 if __name__ == '__main__':
   app.run(host='0.0.0.0', port=PORT, ssl_context=context)

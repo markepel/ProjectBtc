@@ -57,6 +57,9 @@ def handlePayment(invoiceData):
     sendResultMessagesToUser(invoiceForData['chatId'], messageToSend, everythingIsFine)
   else:
     messageToSend = "Оплата недействительна. Обратитесь в службу поддержки."
+    print("AAAAAAAAAAA invoiceForData['chatId'] = {0}".format(invoiceForData['chatId']))
+    print("BBBBBBBBBBB type of it = {0}".format(type(invoiceForData['chatId'])))
+
     bot.send_message(chat_id=invoiceForData['chatId'], text=messageToSend, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
 
 def checkPaymentValidity(i):
@@ -86,7 +89,7 @@ def handleCardPayment(invoiceData):
   amount = invoiceData['amount']
   print('amountCARD = {0}'.format(invoiceData))
   invoiceForData = getInvoiceForData(invoiceData['label'])
-  print('invoiceForDataCARD = {0}'.format(invoiceData))
+  print('invoiceForDataCARD = {0}'.format(invoiceForData))
   messageToSend = ""
   paymentIsValid = checkCardPaymentValidity(invoiceData)
   everythingIsFine = False
@@ -125,8 +128,8 @@ def checkCardPaymentValidity(i):
     , i['amount'], i['currency'], i['datetime'], i['sender'], i['codepro']
     , config.YSECRET, i['label']).encode('utf-8')
   paymentHash = hashlib.sha1(stringToCheck).hexdigest()
-  print('paymentHashCARD = {0}'.format(invoiceData))
-  print('i["sha1_hash"] = {0}'.format(invoiceData))
+  print('AAAAAAAAAAA i["sha1_hash"]  = {0}'.format(i['sha1_hash'] ))
+  print('BBBBBBBBBBB paymentHash = {0}'.format(paymentHash))
 
   if(i['sha1_hash'] == paymentHash):
     return i['sha1_hash'] == paymentHash
