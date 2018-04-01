@@ -64,6 +64,7 @@ def cardInvoice():
     handleCardPayment(invoice)
     print('----Card Invoice-----', request.form)
   except:
+    e = sys.exc_info()[0]
     logger.error("An error occured handling card invoice when request was - \n {0}".format(request.form))  
     logger.error("Card Invoice Error itself = \n {0}".format(str(e)))
   finally:

@@ -25,9 +25,7 @@ def handlePayment(invoiceData):
   if paymentIsValid:
     db = DBRepo()
     if status == 'paid':
-
       if strategyWasBought(invoiceForData):  
-
         strategyThatWasBought = Strategy.fromDbObject(db.get_strategy_by_id(invoiceForData['strategyId'])[0]) 
         amountHadToBePaid = strategyThatWasBought.price
         if int(float(amount)) >= int(float(amountHadToBePaid)):
