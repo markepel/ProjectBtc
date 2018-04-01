@@ -7,3 +7,4 @@ probtc.db-journal
 pureApi.py
 __pycache__/
 /var/www/ProBtc/logs/info.log
+logs/info.log
