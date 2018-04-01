@@ -67,7 +67,7 @@ class Texts:
   def getTextForSubscriptionForStuff():
     return """
 <b>Книги</b>    
-<a href="http://forex4people.ru/books/STEVE_NISON.pdf">Стивен Ниссон - Свечной Анализ</a>
+<a href="http://forex4people.ru/books/STEVE_NISON.pdf">Что такое Биткоин - простым языком</a>
 
 <a href="https://trade-obzor.ru/wp-content/themes/trade-obzor/books/26/%D0%AD%D0%B4%D0%B2%D0%B8%D0%BD%20%D0%9B%D0%B5%D1%84%D0%B5%D0%B2%D1%80,%20%D0%92%D0%BE%D1%81%D0%BF%D0%BE%D0%BC%D0%B8%D0%BD%D0%B0%D0%BD%D0%B8%D1%8F%20%D0%B1%D0%B8%D1%80%D0%B6%D0%B5%D0%B2%D0%BE%D0%B3%D0%BE%20%D1%81%D0%BF%D0%B5%D0%BA%D1%83%D0%BB%D1%8F%D0%BD%D1%82%D0%B0.pdf">Воспоминания Биржевого Спекулянта – Эдвин Леферв</a>
 
@@ -144,8 +144,7 @@ class Texts:
       signalsInfo = "Подписка оформлена до <b>{0}</b>".format(isSubscribedOnSignalsAndExpireDateDict[True]) if True in isSubscribedOnSignalsAndExpireDateDict else "Подписка не оформлена."
 
     signalsText = """
-
-    <b>Сигналы:</b>\n{0}""".format(signalsInfo)
+<b>Сигналы:</b>\n{0}""".format(signalsInfo)
 
     return '{} {}'.format(strategiesText, signalsText)
 
