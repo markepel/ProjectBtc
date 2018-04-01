@@ -21,13 +21,14 @@ def handlePayment(invoiceData):
   messageToSend = ""
   paymentIsValid = checkPaymentValidity(invoiceData)
   everythingIsFine = False
-
+  rightAwayLinkText = ''
   if paymentIsValid:
     db = DBRepo()
     if status == 'paid':
       if strategyWasBought(invoiceForData):  
         strategyThatWasBought = Strategy.fromDbObject(db.get_strategy_by_id(invoiceForData['strategyId'])[0]) 
         amountHadToBePaid = strategyThatWasBought.price
+        rightAwayLinkText = Texts.getRightAwayLinkText(strategyThatWasBought.name, strategyThatWasBought.rightAwayLink) 
         if int(float(amount)) >= int(float(amountHadToBePaid)):
           print('Adding subscription to strategy')
           db.add_subscription_for_strategy(invoiceForData['chatId'], invoiceForData['strategyId'])
@@ -52,7 +53,7 @@ def handlePayment(invoiceData):
         db.delete_subscription_for_strategy(invoiceForData['chatId'], invoiceForData['strategyId'])       
       else:
         db.delete_subscription_for_signals(invoiceForData['chatId'])
-    sendResultMessagesToUser(invoiceForData['chatId'], messageToSend, everythingIsFine)
+    sendResultMessagesToUser(invoiceForData['chatId'], messageToSend, everythingIsFine, strategyWasBought(invoiceForData), rightAwayLinkText)
   else:
     messageToSend = "Оплата недействительна. Обратитесь в службу поддержки."
     print("AAAAAAAAAAA invoiceForData['chatId'] = {0}".format(invoiceForData['chatId']))
@@ -91,11 +92,13 @@ def handleCardPayment(invoiceData):
   messageToSend = ""
   paymentIsValid = checkCardPaymentValidity(invoiceData)
   everythingIsFine = False
+  rightAwayLinkText = ''
 
   if paymentIsValid:
     db = DBRepo()
     if strategyWasBought(invoiceForData):  
       strategyThatWasBought = Strategy.fromDbObject(db.get_strategy_by_id(invoiceForData['strategyId'])[0]) 
+      rightAwayLinkText = Texts.getRightAwayLinkText(strategyThatWasBought.name, strategyThatWasBought.rightAwayLink) 
       amountHadToBePaid = strategyThatWasBought.price
       if int(float(amount)) >= int(float(amountHadToBePaid)):
         print('Adding subscription to strategy')
@@ -115,7 +118,7 @@ def handleCardPayment(invoiceData):
 
       else:
         messageToSend = "Сумма оплаты меньше суммы заказа. Стоимость - {0}, оплачено - {1}. Обратитесь в службу поддержки.".format(config.SUBSCRIPTIONFORSIGNALSPRICE, amount)
-    sendResultMessagesToUser(invoiceForData['chatId'], messageToSend, everythingIsFine)
+    sendResultMessagesToUser(invoiceForData['chatId'], messageToSend, everythingIsFine, strategyWasBought(invoiceForData), rightAwayLinkText)
 
   else:
     messageToSend = "Оплата недействительна. Обратитесь в службу поддержки."
@@ -132,9 +135,13 @@ def checkCardPaymentValidity(i):
   if(i['sha1_hash'] == paymentHash):
     return i['sha1_hash'] == paymentHash
 
-def sendResultMessagesToUser(chatId, message, everythingIsFine):
+def sendResultMessagesToUser(chatId, message, everythingIsFine, strategyWasBought, rightAwayLinkText):
   bot.send_message(chat_id=chatId, text=message, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
   if(everythingIsFine):
+    if(strategyWasBought):
+      bot.send_message(chat_id=chatId, text=rightAwayLinkText, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML) 
     bot.send_message(chat_id=chatId, text=Texts.getFirstLinkText(), reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+    if(strategyWasBought):
+      bot.send_message(chat_id=chatId, text=Texts.getStrategyInstructionText(), reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
 
 

@@ -111,8 +111,22 @@ class Texts:
 
   @staticmethod
   def getFirstLinkText():
-    return """http://telegra.ph/7-pravila-risk-menedzhmenta-pri-torgovle-kriptovalyutami-03-25"""
+    return """
+    Мы подготовили для Вас краткий курс «7 правил риск менеджмента". Изучив данный материал, вы  усовершенствуете свои знания в сохранении капитала, а применение правил на практике гарантированно уменьшит ваши убытки.
+    http://telegra.ph/7-pravila-risk-menedzhmenta-pri-torgovle-kriptovalyutami-03-25"""
 
+  @staticmethod
+  def getStrategyInstructionText():
+    return """
+    Инструкция по применению стратегий.
+    http://telegra.ph/Instrukciya-po-primeneniyu-STRATEGIJ-03-31"""
+
+  @staticmethod
+  def getRightAwayLinkText(strategyName, link):
+    return """
+Обучающий материал. Стратегия {0}. 
+Данный курс поможет Вам освоить основные понятия и базовые принципы стратегии. Настоятельно рекомендуем прочесть материал несколько раз, чтобы не возвращаться к нему во время работы. 
+{1}""".format(strategyName, link)
 
   @staticmethod
   def getTextForProfile(strategyNamesAndExpireDatesDict, isSubscribedOnSignalsAndExpireDateDict):
@@ -188,7 +202,7 @@ Market: Bittrex
 2.Рекомендации для долгосрочных инвестиций
 3.Личные советы наших аналитиков (для Вас будет работать горячая линия)
 
-
+Стоимость подписки {0} ₽
 <b>Присоединяйтесь! И успешной торговли, друзья!</b>
 """.format(config.SUBSCRIPTIONFORSIGNALSPRICE)
 
