@@ -16,7 +16,7 @@ SENDEMAIL, CANCELEMAIL = range(2)
 
 def email(bot, update):
   keyboard = [['Отменить обращение']]
-  logger.info('Someone starts writing to support. Chat id = {0}'.format(update.message.chat_id))
+  logger.info('Someone starts writing to support. Chat id = {0}'.format(update.callback_query.message.chat.id))
   bot.send_message(chat_id=update.callback_query.message.chat.id, text="Введите ваше обращение. Если вы хотите получить ответ не в боте, а по email, укажите его адрес в теле обращения, пожалуйста:", reply_markup = ReplyKeyboardMarkup(keyboard))
   return SENDEMAIL
  
