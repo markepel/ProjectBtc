@@ -84,7 +84,7 @@ def strategyWasBought(invoiceForData):
 def handleCardPayment(invoiceData):
   logger.info("handleCardPayment method, invoice data = {0}".format(invoiceData))
   print('invoiceDataCARD = {0}'.format(invoiceData))
-  amount = invoiceData['amount']
+  amount = invoiceData['withdraw_amount']
   print('amountCARD = {0}'.format(invoiceData))
   invoiceForData = getInvoiceForData(invoiceData['label'])
   print('invoiceForDataCARD = {0}'.format(invoiceForData))
