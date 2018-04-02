@@ -82,10 +82,8 @@ def finish(bot, update):
     logger.info('publishStrategy finished successfully for chat_id {0}. Strategy = {1}'.format(update.message.chat_id, strategy_state[update.message.chat_id]))
     del strategy_state[update.message.chat_id]
     logger.info('strategy_state - {0} for after finish in publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
-  except:
-    e = traceback.format_exc()
-    logger.error("An error occured on publishstrategy strategy_state  = - \n {0}".format(strategy_state))  
-    logger.error("Error itself = \n {0}".format(e).encode('utf-8'))
+  except Exception as e:
+    logger.exception(e)
   finally:
     return ConversationHandler.END
 

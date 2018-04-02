@@ -63,15 +63,7 @@ def finish(bot, update):
     del signal_state["photoId_for_{0}".format(update.message.chat_id)]
     logger.info('signal_state - {0} for after finish in publishSignal for chat_id {1}'.format(signal_state, update.message.chat_id))
   except Exception as e:
-    logger.error("EEERRROOORRR")
-    #e = traceback.format_exc()
     logger.exception(e)
-    print("XXX")
-    logger.info("XXX")
-    print(e)
-    logger.info(e)
-    print("YYY")
-    logger.info("YYY")
   finally:
     return ConversationHandler.END
 

@@ -57,10 +57,8 @@ def finish(bot, update):
     del forAll_state[update.message.chat_id]
     logger.info('forAll_state - {0} after finish in publishForAll for chat_id {1}'.format(forAll_state, update.message.chat_id))
     bot.send_message(chat_id=update.message.chat_id, text="Публикация для всех юзеров разослана.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
-  except:
-    e = traceback.format_exc()
-    logger.error("An error occured on publishForAll forAll_state  = - \n {0}".format(forAll_state))  
-    logger.error("Error itself = \n {0}".format(e).encode('utf-8'))
+  except Exception as e:
+    logger.exception(e)
   finally:
     return ConversationHandler.END
 
