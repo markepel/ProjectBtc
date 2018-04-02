@@ -12,15 +12,11 @@ import traceback
 def setUpLoggers():
   formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
   logger = logging.getLogger('btcLogger')
-  logger.setLevel(logging.INFO)
+  logger.setLevel(logging.DEBUG)
   fh = logging.handlers.TimedRotatingFileHandler(filename = config.LOGPATH, when='d', interval=7, backupCount=3)
-  fh.setLevel(logging.INFO)
+  fh.setLevel(logging.DEBUG)
   fh.setFormatter(formatter)
-  logger.addHandler(fh)
-  fhe = logging.handlers.TimedRotatingFileHandler(filename = config.LOGPATH, when='d', interval=7, backupCount=3)
-  fhe.setLevel(logging.ERROR)
-  fhe.setFormatter(formatter)
-  logger.addHandler(fhe)    
+  logger.addHandler(fh)  
 
 TOKEN = config.TOKEN
 HOST = config.HOST
