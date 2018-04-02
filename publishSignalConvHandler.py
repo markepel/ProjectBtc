@@ -66,8 +66,11 @@ def finish(bot, update):
     logger.error("EEERRROOORRR")
     #e = traceback.format_exc()
     print("XXX")
+    logger.info("XXX")
     print(e)
+    logger.info(e)
     print("YYY")
+    logger.info("YYY")
   finally:
     return ConversationHandler.END
 
