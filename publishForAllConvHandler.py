@@ -7,6 +7,7 @@ import botconfig as config
 from menus import Menus
 from texts import Texts
 import time
+from telegram.error import BadRequest
 
 db = DBRepo()
 reply_keyboard_main_menu = [['Стратегии 🏆'], ['Сигналы 💰'], ['Материалы 📂','Служба поддержки 📞'], ['Личный кабинет 🔐']]
@@ -49,8 +50,8 @@ def finish(bot, update):
       try:
         bot.send_message(chat_id=id, text=forAll_state[update.message.chat_id], reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
         time.sleep(0.03)
-      except Exception as e:
-        print('Exception on send to all - ', e)
+      except BadRequest as e:
+        print('Bad request exception on send to all - ', e)
         db.delete_user(id)
 
     logger.info('PublishForAll finished for chat_id {0} successfully'.format(update.message.chat_id))

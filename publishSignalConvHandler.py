@@ -54,9 +54,12 @@ def finish(bot, update):
 {0}""".format(signal_state["text_for_{0}".format(chatId)])
     photoId = signal_state["photoId_for_{0}".format(chatId)]
     for idsToPublish in idsToPublishBig:
-      id = idsToPublish[0]
-      bot.send_photo(chat_id=id, photo=photoId, caption = text, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
-      time.sleep(0.03)
+      try:  
+        id = idsToPublish[0]
+        bot.send_photo(chat_id=id, photo=photoId, caption = text, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+        time.sleep(0.03)
+      except Exception as e:
+        logger.exception(e)
     bot.send_message(chat_id=chatId, text="Сигнал разослан подписантам.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
     logger.info('publishSignal finished successfully for chat_id {0}. Signal - {1}'.format(chatId, signal_state["text_for_{0}".format(chatId)]))
     del signal_state["text_for_{0}".format(update.message.chat_id)]

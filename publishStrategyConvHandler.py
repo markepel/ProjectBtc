@@ -69,13 +69,15 @@ def finish(bot, update):
     logger.info('idsToPublishBig - {0}'.format(idsToPublishBig))
     for idsToPublish in idsToPublishBig:
       for id in idsToPublish:
-        text = """
-        <b>Урок стратегии "{1}":</b>
-        {0}
-         """.format(strategy_state[update.message.chat_id].text, strategyName)
-        bot.send_photo(chat_id=id, photo=strategy_state[update.message.chat_id].photoId, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
-        bot.send_message(chat_id=id, text=text, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
-        time.sleep(0.04)
+        try:
+          text = """
+          <b>Урок стратегии "{1}":</b>
+{0}""".format(strategy_state[update.message.chat_id].text, strategyName)
+          bot.send_photo(chat_id=id, photo=strategy_state[update.message.chat_id].photoId, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+          bot.send_message(chat_id=id, text=text, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+          time.sleep(0.04)
+        except Exception as e:
+          logger.exception(e)
     logger.info('strategy_state - {0} in the end in publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
 
     bot.send_message(chat_id=update.message.chat_id, text="Публикация стратегии разослана подписантам.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
