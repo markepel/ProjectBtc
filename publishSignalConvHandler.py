@@ -64,8 +64,10 @@ def finish(bot, update):
     logger.info('signal_state - {0} for after finish in publishSignal for chat_id {1}'.format(signal_state, update.message.chat_id))
   except Exception as e:
     logger.error("EEERRROOORRR")
-    e = traceback.format_exc()
-    logger.info(str(e))
+    #e = traceback.format_exc()
+    print("XXX")
+    print(e)
+    print("YYY")
   finally:
     return ConversationHandler.END
 
