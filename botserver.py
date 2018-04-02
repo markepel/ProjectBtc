@@ -33,6 +33,11 @@ logger = logging.getLogger('btcLogger')
 
 app = Flask(__name__)
  
+@app.errorhandler(Exception)
+def handle_error(e):
+  print('EEEEEEEEEEEEEEEEEROR')
+  logger.error("Error itself = \n {0}".format(e).encode('utf-8'))
+
 @app.route("/", methods=["POST", "GET"])
 def webhook():
   try:
