@@ -40,7 +40,7 @@ def webhook():
     dp.process_update(update)
   except:
     e = traceback.format_exc()
-    logger.error("An error occured handling webhook when request was - \n {0}".format(request.get_json(force=True)))  
+    logger.error("An error occured handling webhook when request was - \n {0}".format(request))  
     logger.error("Error itself = \n {0}".format(e).encode('utf-8'))
   finally:
     return ''
