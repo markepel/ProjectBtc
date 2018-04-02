@@ -62,9 +62,9 @@ def finish(bot, update):
     del signal_state["text_for_{0}".format(update.message.chat_id)]
     del signal_state["photoId_for_{0}".format(update.message.chat_id)]
     logger.info('signal_state - {0} for after finish in publishSignal for chat_id {1}'.format(signal_state, update.message.chat_id))
-  except Exception as e:
+  except:
     logger.error("EEERRROOORRR")
-    #e = traceback.format_exc()
+    e = traceback.format_exc()
     print("XXX")
     logger.info("XXX")
     print(e)
