@@ -38,12 +38,8 @@ def start(bot, update):
     logger.exception(e)
     bot.send_message(chat_id=update.message.chat_id, text="", reply_markup = ReplyKeyboardMarkup(reply_keyboard_main_menu))
 
-def cancelEmail(bot, update):
-  try:
-    bot.send_message(chat_id=update.message.chat_id, text="Обращение отменено.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
-  except Exception as e:
-    logger.exception(e)
-    bot.send_message(chat_id=update.message.chat_id, text="", reply_markup = ReplyKeyboardMarkup(reply_keyboard_main_menu))
+# def cancelEmail(bot, update):
+#   bot.send_message(chat_id=update.message.chat_id, text="Обращение отменено.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
 
 def profile(bot, update):
   try:
@@ -181,7 +177,7 @@ def setHandlers(dp):
   handlers.append(RegexHandler(strategyNamesRegex, strategy))
   handlers.append(CommandHandler('testpayment', paymentCheck))
   handlers.append(CommandHandler('testcardpayment', cardPaymentCheck))
-  handlers.append(RegexHandler('Отменить обращение', cancelEmail))
+  #handlers.append(RegexHandler('Отменить обращение', cancelEmail))
 
   for handler in handlers:
   	dp.add_handler(handler)

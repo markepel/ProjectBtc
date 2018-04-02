@@ -6,8 +6,8 @@ import botconfig as config
 import smtplib
 from email.message import EmailMessage
 
-anyTextPattern = "^(?![/cancel])^(?!\s*$).+"
-cancelTextPattern = '^(Отменить обращение)$'
+anyTextPattern = "^(?!Отменить обращение).*$"
+cancelTextPattern = "^Отменить обращение$"
 logger = logging.getLogger('btcLogger')
 
 reply_keyboard_main_menu = [['Стратегии 🏆'], ['Сигналы 💰'], ['Материалы 📂','Служба поддержки 📞'], ['Личный кабинет 🔐']]
@@ -16,25 +16,25 @@ SENDEMAIL, CANCELEMAIL = range(2)
 
 def email(bot, update):
   keyboard = [['Отменить обращение']]
+  print(update)
   logger.info('Someone starts writing to support. Chat id = {0}'.format(update.callback_query.message.chat.id))
   bot.send_message(chat_id=update.callback_query.message.chat.id, text="Введите ваше обращение. Если вы хотите получить ответ не в боте, а по email, укажите его адрес в теле обращения, пожалуйста:", reply_markup = ReplyKeyboardMarkup(keyboard))
   return SENDEMAIL
  
 def sendEmail(bot, update):
-  try:
-    if update.message.text == "Отменить обращение":
-      cancel(bot, update)
-    else:
-      sendEmail(update.message.text + '\n chat_id = {0}'.format(update.message.chat_id))
-      bot.send_message(chat_id=update.message.chat_id, text="Ваше обращение принято к рассмотрению.", reply_markup = ReplyKeyboardMarkup(reply_keyboard_main_menu))
-      logger.info('Chat id = {0} successfully finished his support request'.format(update.message.chat_id))
-  except Exception as e:
-    logger.exception(e)
-    bot.send_message(chat_id=update.message.chat_id, text="", reply_markup = ReplyKeyboardMarkup(reply_keyboard_main_menu))
+  # if update.message.text == "Отменить обращение":
+  #   logger.info('Send Chat id = {0} canceled his support request'.format(update.message.chat_id))
+  #   bot.send_message(chat_id=update.message.chat_id, text="Send Обращение в службу поддержки отменено.", reply_markup = ReplyKeyboardMarkup(reply_keyboard_main_menu))
+  #   return ConversationHandler.END
+  #else:
+  sendEmail(update.message.text + '\n chat_id = {0}'.format(update.message.chat_id))
+  bot.send_message(chat_id=update.message.chat_id, text="Ваше обращение принято к рассмотрению.", reply_markup = ReplyKeyboardMarkup(reply_keyboard_main_menu))
+  logger.info('Chat id = {0} successfully finished his support request'.format(update.message.chat_id))
+  return ConversationHandler.END
 
 def cancel(bot, update):
-  bot.send_message(chat_id=update.message.chat_id, text="Обращение в службу поддержки отменено.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True))
-  logger.info('Chat id = {0} canceled his support request'.format(update.message.chat_id))
+  bot.send_message(chat_id=update.message.chat_id, text="Cancel Обращение в службу поддержки отменено.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True))
+  logger.info('Cancel Chat id = {0} canceled his support request'.format(update.message.chat_id))
 
   return ConversationHandler.END
 
@@ -45,7 +45,7 @@ support_conv_handler = ConversationHandler(
   SENDEMAIL: [RegexHandler(anyTextPattern, sendEmail)],
   },
 
-  fallbacks=[CommandHandler('cancel', cancel)]
+  fallbacks=[RegexHandler(cancelTextPattern, cancel)]
 )
 
 def sendEmail(message):

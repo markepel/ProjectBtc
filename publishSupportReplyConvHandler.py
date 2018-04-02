@@ -51,10 +51,8 @@ def finish(bot, update):
     logger.info('publishReply finished successfully. Reply = {0}'.format(reply_state["text_for_{0}".format(update.message.chat_id)]))
     del reply_state["text_for_{0}".format(update.message.chat_id)]
     logger.info('reply_state - {0} after finish in publishReply for chat_id {1}'.format(reply_state, update.message.chat_id))
-  except:
-    e = traceback.format_exc()
-    logger.error("An error occured on publishReply reply_state  = - \n {0}".format(reply_state))  
-    logger.error("Error itself = \n {0}".format(e).encode('utf-8'))
+  except Exception as e:
+    logger.exception(e)
   finally:
     return ConversationHandler.END
 
