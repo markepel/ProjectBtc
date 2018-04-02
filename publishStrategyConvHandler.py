@@ -24,6 +24,8 @@ PASSWORD, CHOOSESTRATEGY, GETPHOTO, GETTEXT, FINISH = range(5)
 
 def publishStrategy(bot, update):
   logger.info('publishStrategy starts for chat_id {0}'.format(update.message.chat_id))
+  global strategy_state
+  logger.info('Initial strategy_state - {0} for publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
   bot.send_message(chat_id=update.message.chat_id, text="Введите, пожалуйста, пароль:")
   return PASSWORD
  
@@ -35,12 +37,14 @@ def name(bot, update):
   publishStrategyInfo = PublishStrategyInfo()
   publishStrategyInfo.setStrategyName(update.message.text) 
   global strategy_state
+  logger.info('strategy_state - {0} for name in publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
   strategy_state[update.message.chat_id] = publishStrategyInfo
   bot.send_message(chat_id=update.message.chat_id, text="Картинка для публикации:", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
   return GETPHOTO
 
 def photo(bot, update):
   global strategy_state
+  logger.info('strategy_state - {0} for photo in publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
   strategy_state[update.message.chat_id].setPhotoId(update.message.photo[-1].file_id)
 
   bot.send_message(chat_id=update.message.chat_id, text="Введите текст для публикации:", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
@@ -49,6 +53,7 @@ def photo(bot, update):
 
 def text(bot, update):
   global strategy_state
+  logger.info('strategy_state - {0} for text in publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
   strategy_state[update.message.chat_id].setText(update.message.text)
   bot.send_message(chat_id=update.message.chat_id, text="Введите /finish для завершения и публикации ли /cancel для отмены.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
   return FINISH
@@ -57,6 +62,7 @@ def finish(bot, update):
   logger.info('publishStrategy finish starts for chat_id {0}'.format(update.message.chat_id))
   db = DBRepo()
   global strategy_state
+  logger.info('strategy_state - {0} for finish in publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
   strategyName = strategy_state[update.message.chat_id].strategyName
   idsToPublishBig = db.get_active_subscribers_ids_for_strategy_by_name(strategyName)
   logger.info('idsToPublishBig - {0}'.format(idsToPublishBig))
@@ -69,17 +75,22 @@ def finish(bot, update):
       bot.send_photo(chat_id=id, photo=strategy_state[update.message.chat_id].photoId, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
       bot.send_message(chat_id=id, text=text, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
       time.sleep(0.04)
+  logger.info('strategy_state - {0} in the end in publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
 
   bot.send_message(chat_id=update.message.chat_id, text="Публикация стратегии разослана подписантам.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
-  logger.info('publishStrategy finished successfully for chat_id {0}. Strategy = '.format(update.message.chat_id, strategy_state[update.message.chat_id]))
+  logger.info('publishStrategy finished successfully for chat_id {0}. Strategy = {1}'.format(update.message.chat_id, strategy_state[update.message.chat_id]))
   del strategy_state[update.message.chat_id]
+  logger.info('strategy_state - {0} for after finish in publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
+
   return ConversationHandler.END
 
 def cancel(bot, update):
   global strategy_state
+  logger.info('strategy_state - {0} on cancel in publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
   bot.send_message(chat_id=update.message.chat_id, text="Отмена публикации", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
   if update.message.chat_id in signal_state:
     del strategy_state[update.message.chat_id]
+  logger.info('strategy_state - {0} after cancel in publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
   return ConversationHandler.END
 
 publishstrategy_conv_handler = ConversationHandler(
