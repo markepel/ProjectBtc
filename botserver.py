@@ -16,7 +16,11 @@ def setUpLoggers():
   fh = logging.handlers.TimedRotatingFileHandler(filename = config.LOGPATH, when='d', interval=7, backupCount=3)
   fh.setLevel(logging.INFO)
   fh.setFormatter(formatter)
-  logger.addHandler(fh)  
+  logger.addHandler(fh)
+  fhe = logging.handlers.TimedRotatingFileHandler(filename = config.LOGPATH, when='d', interval=7, backupCount=3)
+  fhe.setLevel(logging.ERROR)
+  fhe.setFormatter(formatter)
+  logger.addHandler(fhe)    
 
 TOKEN = config.TOKEN
 HOST = config.HOST
@@ -35,7 +39,6 @@ app = Flask(__name__)
  
 @app.errorhandler(Exception)
 def handle_error(e):
-  print('EEEEEEEEEEEEEEEEEROR')
   logger.error("Error itself = \n {0}".format(e).encode('utf-8'))
 
 @app.route("/", methods=["POST", "GET"])
