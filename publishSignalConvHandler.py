@@ -62,9 +62,10 @@ def finish(bot, update):
     del signal_state["text_for_{0}".format(update.message.chat_id)]
     del signal_state["photoId_for_{0}".format(update.message.chat_id)]
     logger.info('signal_state - {0} for after finish in publishSignal for chat_id {1}'.format(signal_state, update.message.chat_id))
-  except:
+  except Exception as e:
+    logging.exception("message")
     logger.error("EEEEEEEEEEEEEE")
-    logger.error("An error occured on publishsignal signal_state  = {0} {1}".format(**signal_state))  
+    logger.info("An error occured on publishsignal signal_state  = {0}".format(signal_state))  
     e = traceback.format_exc()
     logger.error("Error itself = \n {0}".format(e).encode('utf-8'))
   finally:
