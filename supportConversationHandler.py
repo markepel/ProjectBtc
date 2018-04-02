@@ -23,7 +23,7 @@ def email(bot, update):
 def sendEmail(bot, update):
   try:
     if update.message.text == "Отменить обращение":
-      cancel(bot, update)
+      return CANCELEMAIL
     else:
       sendEmail(update.message.text + '\n chat_id = {0}'.format(update.message.chat_id))
       bot.send_message(chat_id=update.message.chat_id, text="Ваше обращение принято к рассмотрению.", reply_markup = ReplyKeyboardMarkup(reply_keyboard_main_menu))
