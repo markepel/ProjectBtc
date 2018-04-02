@@ -42,27 +42,32 @@ def text(bot, update):
   return FINISH
 
 def finish(bot, update):
-  chatId = update.message.chat_id
-  logger.info('publishSignal finish starts for chat_id {0}'.format(chatId))
-  db = DBRepo()
-  idsToPublishBig = db.get_all_active_subscriptions_ids_for_signals()
-  logger.info('idsToPublishBig - {0}'.format(idsToPublishBig))
-  global signal_state
-  logger.info('signal_state - {0} on finish in publishSignal for chat_id {1}'.format(signal_state, update.message.chat_id))
-  text = """Сигнал:
+  try:
+    chatId = update.message.chat_id
+    logger.info('publishSignal finish starts for chat_id {0}'.format(chatId))
+    db = DBRepo()
+    idsToPublishBig = db.get_all_active_subscriptions_ids_for_signals()
+    logger.info('idsToPublishBig - {0}'.format(idsToPublishBig))
+    global signal_state
+    logger.info('signal_state - {0} on finish in publishSignal for chat_id {1}'.format(signal_state, update.message.chat_id))
+    text = """Сигнал:
 {0}""".format(signal_state["text_for_{0}".format(chatId)])
-  photoId = signal_state["photoId_for_{0}".format(chatId)]
-  for idsToPublish in idsToPublishBig:
-    id = idsToPublish[0]
-    bot.send_photo(chat_id=id, photo=photoId, caption = text, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
-    time.sleep(0.03)
-  bot.send_message(chat_id=chatId, text="Сигнал разослан подписантам.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
-  logger.info('publishSignal finished successfully for chat_id {0}. Signal - {1}'.format(chatId, signal_state["text_for_{0}".format(chatId)]))
-  del signal_state["text_for_{0}".format(update.message.chat_id)]
-  del signal_state["photoId_for_{0}".format(update.message.chat_id)]
-  logger.info('signal_state - {0} for after finish in publishSignal for chat_id {1}'.format(signal_state, update.message.chat_id))
-
-  return ConversationHandler.END
+    photoId = signal_state["photoId_for_{0}".format(chatId)]
+    for idsToPublish in idsToPublishBig:
+      id = idsToPublish[0]
+      bot.send_photo(chat_id=id, photo=photoId, caption = text, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+      time.sleep(0.03)
+    bot.send_message(chat_id=chatId, text="Сигнал разослан подписантам.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+    logger.info('publishSignal finished successfully for chat_id {0}. Signal - {1}'.format(chatId, signal_state["text_for_{0}".format(chatId)]))
+    del signal_state["text_for_{0}".format(update.message.chat_id)]
+    del signal_state["photoId_for_{0}".format(update.message.chat_id)]
+    logger.info('signal_state - {0} for after finish in publishSignal for chat_id {1}'.format(signal_state, update.message.chat_id))
+  except:
+    e = traceback.format_exc()
+    logger.error("An error occured on publishsignal signal_state  = - \n {0}".format(signal_state))  
+    logger.error("Error itself = \n {0}".format(e).encode('utf-8'))
+  finally:
+    return ConversationHandler.END
 
 def cancel(bot, update):
   bot.send_message(chat_id=update.message.chat_id, text="Отмена публикации", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)

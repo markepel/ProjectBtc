@@ -59,30 +59,35 @@ def text(bot, update):
   return FINISH
 
 def finish(bot, update):
-  logger.info('publishStrategy finish starts for chat_id {0}'.format(update.message.chat_id))
-  db = DBRepo()
-  global strategy_state
-  logger.info('strategy_state - {0} for finish in publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
-  strategyName = strategy_state[update.message.chat_id].strategyName
-  idsToPublishBig = db.get_active_subscribers_ids_for_strategy_by_name(strategyName)
-  logger.info('idsToPublishBig - {0}'.format(idsToPublishBig))
-  for idsToPublish in idsToPublishBig:
-    for id in idsToPublish:
-      text = """
-      <b>Урок стратегии "{1}":</b>
-      {0}
-       """.format(strategy_state[update.message.chat_id].text, strategyName)
-      bot.send_photo(chat_id=id, photo=strategy_state[update.message.chat_id].photoId, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
-      bot.send_message(chat_id=id, text=text, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
-      time.sleep(0.04)
-  logger.info('strategy_state - {0} in the end in publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
+  try:
+    logger.info('publishStrategy finish starts for chat_id {0}'.format(update.message.chat_id))
+    db = DBRepo()
+    global strategy_state
+    logger.info('strategy_state - {0} for finish in publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
+    strategyName = strategy_state[update.message.chat_id].strategyName
+    idsToPublishBig = db.get_active_subscribers_ids_for_strategy_by_name(strategyName)
+    logger.info('idsToPublishBig - {0}'.format(idsToPublishBig))
+    for idsToPublish in idsToPublishBig:
+      for id in idsToPublish:
+        text = """
+        <b>Урок стратегии "{1}":</b>
+        {0}
+         """.format(strategy_state[update.message.chat_id].text, strategyName)
+        bot.send_photo(chat_id=id, photo=strategy_state[update.message.chat_id].photoId, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+        bot.send_message(chat_id=id, text=text, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+        time.sleep(0.04)
+    logger.info('strategy_state - {0} in the end in publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
 
-  bot.send_message(chat_id=update.message.chat_id, text="Публикация стратегии разослана подписантам.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
-  logger.info('publishStrategy finished successfully for chat_id {0}. Strategy = {1}'.format(update.message.chat_id, strategy_state[update.message.chat_id]))
-  del strategy_state[update.message.chat_id]
-  logger.info('strategy_state - {0} for after finish in publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
-
-  return ConversationHandler.END
+    bot.send_message(chat_id=update.message.chat_id, text="Публикация стратегии разослана подписантам.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+    logger.info('publishStrategy finished successfully for chat_id {0}. Strategy = {1}'.format(update.message.chat_id, strategy_state[update.message.chat_id]))
+    del strategy_state[update.message.chat_id]
+    logger.info('strategy_state - {0} for after finish in publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
+  except:
+    e = traceback.format_exc()
+    logger.error("An error occured on publishstrategy strategy_state  = - \n {0}".format(strategy_state))  
+    logger.error("Error itself = \n {0}".format(e).encode('utf-8'))
+  finally:
+    return ConversationHandler.END
 
 def cancel(bot, update):
   global strategy_state

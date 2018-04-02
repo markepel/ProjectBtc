@@ -38,25 +38,31 @@ def text(bot, update):
   return FINISH
 
 def finish(bot, update):
-  db = DBRepo()
-  global forAll_state
-  logger.info('forAll_state - {0} on finish in publishForAll for chat_id {1}'.format(forAll_state, update.message.chat_id))
-  idsToPublish = db.get_all_users_ids()
-  logger.info('PublishForAll ids = {0}'.format(idsToPublish))
-  for id in idsToPublish:
-    id = id[0]
-    try:
-      bot.send_message(chat_id=id, text=forAll_state[update.message.chat_id], reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
-      time.sleep(0.03)
-    except Exception as e:
-      print('Exception on send to all - ', e)
-      db.delete_user(id)
+  try:
+    db = DBRepo()
+    global forAll_state
+    logger.info('forAll_state - {0} on finish in publishForAll for chat_id {1}'.format(forAll_state, update.message.chat_id))
+    idsToPublish = db.get_all_users_ids()
+    logger.info('PublishForAll ids = {0}'.format(idsToPublish))
+    for id in idsToPublish:
+      id = id[0]
+      try:
+        bot.send_message(chat_id=id, text=forAll_state[update.message.chat_id], reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+        time.sleep(0.03)
+      except Exception as e:
+        print('Exception on send to all - ', e)
+        db.delete_user(id)
 
-  logger.info('PublishForAll finished for chat_id {0} successfully'.format(update.message.chat_id))
-  del forAll_state[update.message.chat_id]
-  logger.info('forAll_state - {0} after finish in publishForAll for chat_id {1}'.format(forAll_state, update.message.chat_id))
-  bot.send_message(chat_id=update.message.chat_id, text="Публикация для всех юзеров разослана.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
-  return ConversationHandler.END
+    logger.info('PublishForAll finished for chat_id {0} successfully'.format(update.message.chat_id))
+    del forAll_state[update.message.chat_id]
+    logger.info('forAll_state - {0} after finish in publishForAll for chat_id {1}'.format(forAll_state, update.message.chat_id))
+    bot.send_message(chat_id=update.message.chat_id, text="Публикация для всех юзеров разослана.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+  except:
+    e = traceback.format_exc()
+    logger.error("An error occured on publishForAll forAll_state  = - \n {0}".format(forAll_state))  
+    logger.error("Error itself = \n {0}".format(e).encode('utf-8'))
+  finally:
+    return ConversationHandler.END
 
 def cancel(bot, update):
   global forAll_state
