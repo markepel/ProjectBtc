@@ -103,7 +103,7 @@ publishstrategy_conv_handler = ConversationHandler(
   CHOOSESTRATEGY: [RegexHandler(strategyNamesRegex, name)],
   GETPHOTO: [MessageHandler(Filters.photo, photo)],
   GETTEXT: [RegexHandler(anyTextPattern, text)],
-  FINISH: [RegexHandler(finishPattern, finish)]
+  FINISH: [CommandHandler('finish', finish)]
   },
 
   fallbacks=[CommandHandler('cancel', cancel)]

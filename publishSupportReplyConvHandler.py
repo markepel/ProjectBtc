@@ -6,8 +6,8 @@ from dbrepo import DBRepo
 import botconfig as config
 
 reply_keyboard_main_menu = [['Стратегии 🏆'], ['Сигналы 💰'], ['Материалы 📂','Служба поддержки 📞'], ['Личный кабинет 🔐']]
-finishPattern = '^(/finish)$'
-anyTextPattern = "^(?![/cancel])^(?!\s*$).+"
+#finishPattern = '^(/finish)$'
+anyTextPattern ="^(?!.*(Отменить обращение))"
 onlyDigitsPattern = "^\d+$"
 global reply_state
 reply_state = {}
@@ -73,7 +73,7 @@ publishreply_conv_handler = ConversationHandler(
   PASSWORD: [RegexHandler(config.MANAGERPASS, password)],
   GETTEXT: [RegexHandler(anyTextPattern, text)],
   GETCHATID: [RegexHandler(onlyDigitsPattern, chatId)],
-  FINISH: [RegexHandler(finishPattern, finish)]
+  FINISH: [CommandHandler('finish', finish)]
   },
 
   fallbacks=[CommandHandler('cancel', cancel)]

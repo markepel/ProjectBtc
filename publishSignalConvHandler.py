@@ -85,7 +85,7 @@ publishsignal_conv_handler = ConversationHandler(
   PASSWORD: [RegexHandler(config.MANAGERPASS, password)],
   GETPHOTO: [MessageHandler(Filters.photo, photo)],
   GETTEXT: [RegexHandler(anyTextPattern, text)],
-  FINISH: [RegexHandler(finishPattern, finish)]
+  FINISH: [CommandHandler('finish', finish)]
   },
 
   fallbacks=[CommandHandler('cancel', cancel)]
