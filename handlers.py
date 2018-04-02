@@ -114,7 +114,7 @@ def cardPaymentCheck(bot, update):
   ('operation_id', 'test-notification'), 
   ('codepro', 'false'), 
   ('operation_label', ''), 
-  ('label', 'cid_111384340_stid_7'), 
+  ('label', 'cid_111384340_stid_2'), 
   ('test_notification', 'true'), 
   ('sender', '41001000040')])
   fakeInvoice = inputInvoiceData.to_dict(flat=True)
