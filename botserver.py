@@ -41,7 +41,7 @@ def webhook():
   except:
     e = traceback.format_exc()
     logger.error("An error occured handling webhook when request was - \n {0}".format(request.get_json(force=True)))  
-    logger.error("Error itself = \n {0}".format(str(e)))
+    logger.error("Error itself = \n {0}".format(e).encode('utf-8'))
   finally:
     return ''
 
@@ -54,7 +54,7 @@ def invoice():
   except:
     e = traceback.format_exc()
     logger.error("An error occured handling invoice when request was - \n {0}".format(request.form))  
-    logger.error("Invoice Error itself = \n {0}".format(str(e)))
+    logger.error("Invoice Error itself = \n {0}".format(e).encode('utf-8'))
   finally:
     return ''
 
@@ -67,7 +67,7 @@ def cardInvoice():
   except:
     e = traceback.format_exc()
     logger.error("An error occured handling card invoice when request was - \n {0}".format(request.form))  
-    logger.error("Card Invoice Error itself = \n {0}".format(str(e)))
+    logger.error("Card Invoice Error itself = \n {0}".format(e).encode('utf-8'))
   finally:
     return ''
 
