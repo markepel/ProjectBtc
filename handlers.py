@@ -16,6 +16,8 @@ from publishStrategyConvHandler import get_publishstrategy_conv_handler
 from publishSignalConvHandler import get_publishsignal_conv_handler
 from publishSupportReplyConvHandler import get_publishreply_conv_handler
 from publishForAllConvHandler import get_publishforall_conv_handler
+import smtplib
+from email.message import EmailMessage
 
 
 db = DBRepo()
@@ -23,6 +25,7 @@ db.setup()
 handlers = []
 reply_keyboard_main_menu = [['Стратегии 🏆'], ['Сигналы 💰'], ['Материалы 📂','Служба поддержки 📞'], ['Личный кабинет 🔐']]
 reply_keyboard_strategies = Menus.generateStrategiesMenu()
+reply_support_menu = [['Отправить 📮'],['🔙Назад']]
 strategyNamesRegex = Texts.generateRegexForStrategies(db.get_all_strategies_names())
 goBackTo = 'start'
 logger = logging.getLogger('btcLogger')
@@ -86,17 +89,21 @@ def stuff(bot, update):
     logger.exception(e)
     bot.send_message(chat_id=update.message.chat_id, text="", reply_markup = ReplyKeyboardMarkup(reply_keyboard_main_menu))
 
+# def contacts(bot, update):
+#   try:
+#     keyboard = [[InlineKeyboardButton('Написать в службу поддержки', callback_data='email')]]
+#     bot.send_message(chat_id=update.message.chat_id, text="Отправьте свое обращение на адрес {0} или сделайте это здесь и сейчас, нажав на кнопку \"Написать в службу поддержки\"".format(config.EMAILTO), reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=telegram.ParseMode.HTML)
+#   except Exception as e:
+#     logger.exception(e)
+#     bot.send_message(chat_id=update.message.chat_id, text="", reply_markup = ReplyKeyboardMarkup(reply_keyboard_main_menu))
+
 def contacts(bot, update):
   try:
     keyboard = [[InlineKeyboardButton('Написать в службу поддержки', callback_data='email')]]
-    bot.send_message(chat_id=update.message.chat_id, text="Отправьте свое обращение на адрес {0}.\n Или сделайте это прямо здесь, нажав на кнопку \"Написать в службу поддержки\"".format(config.EMAILTO), reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=telegram.ParseMode.HTML)
+    bot.send_message(chat_id=update.message.chat_id, text="Отправьте свое обращение на адрес {0}.\n Или сделайте это здесь и сейчас. Если вы хотите получить ответ не в боте, а по email, укажите его адрес в своем сообщении, пожалуйста.".format(config.EMAILTO), reply_markup=ReplyKeyboardMarkup(reply_support_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
   except Exception as e:
     logger.exception(e)
     bot.send_message(chat_id=update.message.chat_id, text="", reply_markup = ReplyKeyboardMarkup(reply_keyboard_main_menu))
-
-# def email(bot, update):
-#   bot.send_message(chat_id=update.callback_query.message.chat.id, text="LOL", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
-
 
 def strategy(bot, update):
   try:
@@ -148,7 +155,6 @@ def cardPaymentCheck(bot, update):
   fakeInvoice = inputInvoiceData.to_dict(flat=True)
   handleCardPayment(fakeInvoice)
 
-
 def backToMainMenu(bot, update):
   try:
     possibles = globals().copy()
@@ -166,7 +172,7 @@ def setHandlers(dp):
   handlers.append(RegexHandler('Сигналы 💰', signals))
   handlers.append(RegexHandler('Стратегии 🏆', strategies))
   handlers.append(RegexHandler('Материалы 📂', stuff))
-  handlers.append(RegexHandler('Служба поддержки 📞', contacts))
+  #handlers.append(RegexHandler('Служба поддержки 📞', contacts))
   handlers.append(RegexHandler('🔙Назад', backToMainMenu))
   handlers.append(get_addstrategy_conv_handler())
   handlers.append(get_support_conv_handler())
