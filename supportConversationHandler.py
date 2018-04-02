@@ -23,14 +23,14 @@ def email(bot, update):
 def sendEmail(bot, update):
   try:
     if update.message.text == "Отменить обращение":
-      logger.info('Chat id = {0} canceled his support request'.format(update.message.chat_id))
-      bot.send_message(chat_id=update.message.chat_id, text="Обращение в службу поддержки отменено.", reply_markup = ReplyKeyboardMarkup(reply_keyboard_main_menu))
+      cancel(bot, update)
     else:
       sendEmail(update.message.text + '\n chat_id = {0}'.format(update.message.chat_id))
       bot.send_message(chat_id=update.message.chat_id, text="Ваше обращение принято к рассмотрению.", reply_markup = ReplyKeyboardMarkup(reply_keyboard_main_menu))
       logger.info('Chat id = {0} successfully finished his support request'.format(update.message.chat_id))
   except Exception as e:
     logger.exception(e)
+    bot.send_message(chat_id=update.message.chat_id, text="", reply_markup = ReplyKeyboardMarkup(reply_keyboard_main_menu))
   finally:
     return ConversationHandler.END
 
