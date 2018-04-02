@@ -64,8 +64,8 @@ def finish(bot, update):
     logger.info('signal_state - {0} for after finish in publishSignal for chat_id {1}'.format(signal_state, update.message.chat_id))
   except:
     logger.error("EEEEEEEEEEEEEE")
-    m  = "An error occured on publishsignal signal_state  = {0}".format(signal_state)
-    logger.error(m)  
+    #m  = "An error occured on publishsignal signal_state  = {0}".format(signal_state)
+    logger.error(signal_state)  
     e = traceback.format_exc()
     logger.error("Error itself = \n {0}".format(e).encode('utf-8'))
   finally:
