@@ -29,61 +29,93 @@ logger = logging.getLogger('btcLogger')
 
 
 def start(bot, update):
-  logger.info('New START!!!, new chat_id = {0}, from_user.id {1}'.format(update.message.chat_id, update.message.from_user.id))
-  bot.send_message(chat_id=update.message.chat_id, text=Texts.getTextOnStart(update.message.from_user.first_name), reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
-  db = DBRepo()
-  db.add_user(update.message.from_user.id, update.message.from_user.first_name)  
+  try:
+    logger.info('New START!!!, new chat_id = {0}, from_user.id {1}'.format(update.message.chat_id, update.message.from_user.id))
+    bot.send_message(chat_id=update.message.chat_id, text=Texts.getTextOnStart(update.message.from_user.first_name), reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+    db = DBRepo()
+    db.add_user(update.message.from_user.id, update.message.from_user.first_name)  
+  except Exception as e:
+    logger.exception(e)
+    bot.send_message(chat_id=update.message.chat_id, text="", reply_markup = ReplyKeyboardMarkup(reply_keyboard_main_menu))
 
 def cancelEmail(bot, update):
-  bot.send_message(chat_id=update.message.chat_id, text="Обращение отменено.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+  try:
+    bot.send_message(chat_id=update.message.chat_id, text="Обращение отменено.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+  except Exception as e:
+    logger.exception(e)
+    bot.send_message(chat_id=update.message.chat_id, text="", reply_markup = ReplyKeyboardMarkup(reply_keyboard_main_menu))
 
 def profile(bot, update):
-  logger.info('Getting profile for chat_id = {0}'.format(update.message.chat_id))
-  db = DBRepo()
-  activeStrategySubscriptions = db.get_active_subscriptions_for_strategies_by_user_id(int(update.message.chat_id))
-  signalsSubscriptionsDb = db.get_active_subscriptions_for_signals_by_user_id(int(update.message.chat_id))
-  strategiesInfo = dict()
-  signalsSubscriptions = dict()
-  for aSS in activeStrategySubscriptions:
-    sName = db.get_strategy_by_id(aSS[1])[0][1]
-    strategiesInfo[sName] = datetime.datetime.fromtimestamp(aSS[4] + config.MONTHINSECONDS).date()
-  for sig in signalsSubscriptionsDb:
-    signalsSubscriptions[True] = datetime.datetime.fromtimestamp(sig[2] + config.MONTHINSECONDS).date()
+  try:
+    logger.info('Getting profile for chat_id = {0}'.format(update.message.chat_id))
+    db = DBRepo()
+    activeStrategySubscriptions = db.get_active_subscriptions_for_strategies_by_user_id(int(update.message.chat_id))
+    signalsSubscriptionsDb = db.get_active_subscriptions_for_signals_by_user_id(int(update.message.chat_id))
+    strategiesInfo = dict()
+    signalsSubscriptions = dict()
+    for aSS in activeStrategySubscriptions:
+      sName = db.get_strategy_by_id(aSS[1])[0][1]
+      strategiesInfo[sName] = datetime.datetime.fromtimestamp(aSS[4] + config.MONTHINSECONDS).date()
+    for sig in signalsSubscriptionsDb:
+      signalsSubscriptions[True] = datetime.datetime.fromtimestamp(sig[2] + config.MONTHINSECONDS).date()
 
-  bot.send_message(chat_id=update.message.chat_id, text=Texts.getTextForProfile(strategiesInfo, signalsSubscriptions), reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+    bot.send_message(chat_id=update.message.chat_id, text=Texts.getTextForProfile(strategiesInfo, signalsSubscriptions), reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+  except Exception as e:
+    logger.exception(e)
+    bot.send_message(chat_id=update.message.chat_id, text="", reply_markup = ReplyKeyboardMarkup(reply_keyboard_main_menu))
 
 def signals(bot, update):
   # cryptoPaymentButton = [InlineKeyboardButton('Оплатить подписку криптовалютой. Стоимость - ' + str(config.SUBSCRIPTIONFORSIGNALSPRICE) + '₽', callback_data='buy-signals', url = Texts.generatePaymentButtonForSignals(update.message.chat_id, config.SUBSCRIPTIONFORSIGNALSPRICE))]
   # cardPaymentButton = [InlineKeyboardButton('Оплатить картой. Стоимость - ' + str(config.SUBSCRIPTIONFORSIGNALSPRICE) + '₽', callback_data='buy-signals', url = Texts.generateCardPaymentButtonForSignals(update.message.chat_id, config.SUBSCRIPTIONFORSIGNALSPRICE))]
-  cryptoPaymentButton = [InlineKeyboardButton('Оплатить криптовалютой', callback_data='buy-signals', url = Texts.generatePaymentButtonForSignals(update.message.chat_id, config.SUBSCRIPTIONFORSIGNALSPRICE))]
-  cardPaymentButton = [InlineKeyboardButton('Оплатить картой', callback_data='buy-signals', url = Texts.generateCardPaymentButtonForSignals(update.message.chat_id, config.SUBSCRIPTIONFORSIGNALSPRICE))]
-  keyboard = [cryptoPaymentButton, cardPaymentButton]
-  bot.send_message(chat_id=update.message.chat_id, text=Texts.getTextForSignals(), reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=telegram.ParseMode.HTML)
+  try:
+    cryptoPaymentButton = [InlineKeyboardButton('Оплатить криптовалютой', callback_data='buy-signals', url = Texts.generatePaymentButtonForSignals(update.message.chat_id, config.SUBSCRIPTIONFORSIGNALSPRICE))]
+    cardPaymentButton = [InlineKeyboardButton('Оплатить картой', callback_data='buy-signals', url = Texts.generateCardPaymentButtonForSignals(update.message.chat_id, config.SUBSCRIPTIONFORSIGNALSPRICE))]
+    keyboard = [cryptoPaymentButton, cardPaymentButton]
+    bot.send_message(chat_id=update.message.chat_id, text=Texts.getTextForSignals(), reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=telegram.ParseMode.HTML)
+  except Exception as e:
+    logger.exception(e)
+    bot.send_message(chat_id=update.message.chat_id, text="", reply_markup = ReplyKeyboardMarkup(reply_keyboard_main_menu))
 
 def strategies(bot, update):
-  bot.send_message(chat_id=update.message.chat_id, text=Texts.getTextForStrategies(), reply_markup=ReplyKeyboardMarkup(reply_keyboard_strategies, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+  try:
+    bot.send_message(chat_id=update.message.chat_id, text=Texts.getTextForStrategies(), reply_markup=ReplyKeyboardMarkup(reply_keyboard_strategies, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+  except Exception as e:
+    logger.exception(e)
+    bot.send_message(chat_id=update.message.chat_id, text="", reply_markup = ReplyKeyboardMarkup(reply_keyboard_main_menu))
 
 def stuff(bot, update):
-  bot.send_message(chat_id=update.message.chat_id, text=Texts.getTextForSubscriptionForStuff(), reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+  try:
+    bot.send_message(chat_id=update.message.chat_id, text=Texts.getTextForSubscriptionForStuff(), reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+  except Exception as e:
+    logger.exception(e)
+    bot.send_message(chat_id=update.message.chat_id, text="", reply_markup = ReplyKeyboardMarkup(reply_keyboard_main_menu))
 
 def contacts(bot, update):
-  keyboard = [[InlineKeyboardButton('Написать в службу поддержки', callback_data='email')]]
-  bot.send_message(chat_id=update.message.chat_id, text="Отправьте свое обращение на адрес {0}.\n Или сделайте это прямо здесь, нажав на кнопку \"Написать в службу поддержки\"".format(config.EMAILTO), reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=telegram.ParseMode.HTML)
+  try:
+    keyboard = [[InlineKeyboardButton('Написать в службу поддержки', callback_data='email')]]
+    bot.send_message(chat_id=update.message.chat_id, text="Отправьте свое обращение на адрес {0}.\n Или сделайте это прямо здесь, нажав на кнопку \"Написать в службу поддержки\"".format(config.EMAILTO), reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=telegram.ParseMode.HTML)
+  except Exception as e:
+    logger.exception(e)
+    bot.send_message(chat_id=update.message.chat_id, text="", reply_markup = ReplyKeyboardMarkup(reply_keyboard_main_menu))
 
 # def email(bot, update):
 #   bot.send_message(chat_id=update.callback_query.message.chat.id, text="LOL", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
 
 
 def strategy(bot, update):
-  db = DBRepo()
-  strategyItself = Strategy.fromDbObject(db.get_strategy_by_name(update.message.text)[0])
-  # cryptoPaymentButton = [InlineKeyboardButton('Оплатить криптовалютой. Стоимость - ' + str(strategyItself.price) + '₽', callback_data='buy-s_name=' + strategyItself.name, url = Texts.generatePaymentButtonForStrategy(strategyItself.id, strategyItself.name, update.message.chat_id, strategyItself.price))]
-  # cardPaymentButton = [InlineKeyboardButton('Оплатить картой. Стоимость - ' + str(strategyItself.price) + '₽', callback_data='buy-s_name=' + strategyItself.name, url = Texts.generateCardPaymentButtonForStrategy(strategyItself.id, strategyItself.name, update.message.chat_id, strategyItself.price))]
-  cryptoPaymentButton = [InlineKeyboardButton('Оплатить криптовалютой', callback_data='buy-s_name=' + strategyItself.name, url = Texts.generatePaymentButtonForStrategy(strategyItself.id, strategyItself.name, update.message.chat_id, strategyItself.price))]
-  cardPaymentButton = [InlineKeyboardButton('Оплатить картой', callback_data='buy-s_name=' + strategyItself.name, url = Texts.generateCardPaymentButtonForStrategy(strategyItself.id, strategyItself.name, update.message.chat_id, strategyItself.price))]
-  
-  keyboard = [cryptoPaymentButton, cardPaymentButton]
-  bot.send_message(chat_id=update.message.chat_id, text=strategyItself.description, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=telegram.ParseMode.HTML)
+  try:
+    db = DBRepo()
+    strategyItself = Strategy.fromDbObject(db.get_strategy_by_name(update.message.text)[0])
+    # cryptoPaymentButton = [InlineKeyboardButton('Оплатить криптовалютой. Стоимость - ' + str(strategyItself.price) + '₽', callback_data='buy-s_name=' + strategyItself.name, url = Texts.generatePaymentButtonForStrategy(strategyItself.id, strategyItself.name, update.message.chat_id, strategyItself.price))]
+    # cardPaymentButton = [InlineKeyboardButton('Оплатить картой. Стоимость - ' + str(strategyItself.price) + '₽', callback_data='buy-s_name=' + strategyItself.name, url = Texts.generateCardPaymentButtonForStrategy(strategyItself.id, strategyItself.name, update.message.chat_id, strategyItself.price))]
+    cryptoPaymentButton = [InlineKeyboardButton('Оплатить криптовалютой', callback_data='buy-s_name=' + strategyItself.name, url = Texts.generatePaymentButtonForStrategy(strategyItself.id, strategyItself.name, update.message.chat_id, strategyItself.price))]
+    cardPaymentButton = [InlineKeyboardButton('Оплатить картой', callback_data='buy-s_name=' + strategyItself.name, url = Texts.generateCardPaymentButtonForStrategy(strategyItself.id, strategyItself.name, update.message.chat_id, strategyItself.price))]
+    
+    keyboard = [cryptoPaymentButton, cardPaymentButton]
+    bot.send_message(chat_id=update.message.chat_id, text=strategyItself.description, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode=telegram.ParseMode.HTML)
+  except Exception as e:
+    logger.exception(e)
+    bot.send_message(chat_id=update.message.chat_id, text="", reply_markup = ReplyKeyboardMarkup(reply_keyboard_main_menu))
 
 def paymentCheck(bot, update):
   inputInvoiceData = ImmutableMultiDict([
@@ -122,11 +154,14 @@ def cardPaymentCheck(bot, update):
 
 
 def backToMainMenu(bot, update):
-  possibles = globals().copy()
-  possibles.update(locals())
-  method = possibles.get(goBackTo)
-  method(bot, update)
-
+  try:
+    possibles = globals().copy()
+    possibles.update(locals())
+    method = possibles.get(goBackTo)
+    method(bot, update)
+  except Exception as e:
+    logger.exception(e)
+    bot.send_message(chat_id=update.message.chat_id, text="", reply_markup = ReplyKeyboardMarkup(reply_keyboard_main_menu))
 
 
 def setHandlers(dp):
