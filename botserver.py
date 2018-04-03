@@ -42,7 +42,7 @@ def webhook():
     update = telegram.update.Update.de_json(request.get_json(force=True),bot)
     dp.process_update(update)
   except Exception as e:
-    logger.error("An error occured handling webhook when request was - \n {0}".format(request))  
+    logger.error("An error occured handling webhook when request was - \n {0}".format(request.get_json(force=True)))  
     logger.exception(e)
   finally:
     return ''
