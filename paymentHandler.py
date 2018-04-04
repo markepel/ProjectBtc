@@ -45,6 +45,7 @@ def handlePayment(invoiceData):
           everythingIsFine = True
         else:
           messageToSend = "Сумма оплаты меньше суммы заказа. Стоимость - {0}, оплачено - {1}. Обратитесь в службу поддержки.".format(config.SUBSCRIPTIONFORSIGNALSPRICE, amount)
+      sendResultMessagesToUser(invoiceForData['chatId'], messageToSend, everythingIsFine, strategyWasBought(invoiceForData), rightAwayLinkText)
 
     elif status == 'cancelled' or status == 'mispaid':
       
@@ -53,7 +54,7 @@ def handlePayment(invoiceData):
         db.delete_subscription_for_strategy(invoiceForData['chatId'], invoiceForData['strategyId'])       
       else:
         db.delete_subscription_for_signals(invoiceForData['chatId'])
-    sendResultMessagesToUser(invoiceForData['chatId'], messageToSend, everythingIsFine, strategyWasBought(invoiceForData), rightAwayLinkText)
+      sendResultMessagesToUser(invoiceForData['chatId'], messageToSend, everythingIsFine, strategyWasBought(invoiceForData), rightAwayLinkText)
   else:
     messageToSend = "Оплата недействительна. Обратитесь в службу поддержки."
     print("AAAAAAAAAAA invoiceForData['chatId'] = {0}".format(invoiceForData['chatId']))
@@ -132,7 +133,7 @@ def checkCardPaymentValidity(i):
   print('AAAAAAAAAAA i["sha1_hash"]  = {0}'.format(i['sha1_hash'] ))
   print('BBBBBBBBBBB paymentHash = {0}'.format(paymentHash))
 
-  if(i['sha1_hash'] == paymentHash):
+  if(i['sha1_hash'] == paymentHash and i['codepro'] != 'false'):
     return i['sha1_hash'] == paymentHash
 
 def sendResultMessagesToUser(chatId, message, everythingIsFine, strategyWasBought, rightAwayLinkText):
