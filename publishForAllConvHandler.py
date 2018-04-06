@@ -50,7 +50,7 @@ def finish(bot, update):
       try:
         bot.send_message(chat_id=id, text=forAll_state[update.message.chat_id], reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
         time.sleep(0.03)
-      except BadRequest as e:
+      except Exception as e:
         print('Bad request exception on send to all - ', e)
         db.delete_user(id)
 
