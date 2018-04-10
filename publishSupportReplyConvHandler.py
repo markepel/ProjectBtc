@@ -28,17 +28,19 @@ def password(bot, update):
 
 def text(bot, update):
   global reply_state
-  logger.info('reply_state - {0} for text in publishReply for chat_id {1}'.format(reply_state, update.message.chat_id))
   reply_state["text_for_{0}".format(update.message.chat_id)] = update.message.text
   bot.send_message(chat_id=update.message.chat_id, text="Введите идентификатор пользователя:", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+  logger.info('reply_state - {0} for text in publishReply for chat_id {1}'.format(reply_state, update.message.chat_id))
+
   return GETCHATID
 
 def chatId(bot, update):
   global reply_state
-  logger.info('reply_state - {0} for chatId in publishReply for chat_id {1}'.format(reply_state, update.message.chat_id))
   reply_state["chatid_for_{0}".format(update.message.chat_id)] = update.message.text
   logger.info('publishReply sends to user with id {0}'.format(update.message.text))
   bot.send_message(chat_id=update.message.chat_id, text="Введите /finish для завершения и публикации или /cancel для отмены.")
+  logger.info('reply_state - {0} for chatId in publishReply for chat_id {1}'.format(reply_state, update.message.chat_id))
+
   return FINISH
 
 def finish(bot, update):

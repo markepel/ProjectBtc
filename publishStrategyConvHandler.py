@@ -37,25 +37,26 @@ def name(bot, update):
   publishStrategyInfo = PublishStrategyInfo()
   publishStrategyInfo.setStrategyName(update.message.text) 
   global strategy_state
-  logger.info('strategy_state - {0} for name in publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
   strategy_state[update.message.chat_id] = publishStrategyInfo
   bot.send_message(chat_id=update.message.chat_id, text="Картинка для публикации:", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+  logger.info('strategy_state - {0} for name in publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
+
   return GETPHOTO
 
 def photo(bot, update):
   global strategy_state
-  logger.info('strategy_state - {0} for photo in publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
   strategy_state[update.message.chat_id].setPhotoId(update.message.photo[-1].file_id)
 
   bot.send_message(chat_id=update.message.chat_id, text="Введите текст для публикации:", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
-  print("return GETTEXT")
+  logger.info('strategy_state - {0} for photo in publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
   return GETTEXT
 
 def text(bot, update):
   global strategy_state
-  logger.info('strategy_state - {0} for text in publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
   strategy_state[update.message.chat_id].setText(update.message.text)
   bot.send_message(chat_id=update.message.chat_id, text="Введите /finish для завершения и публикации ли /cancel для отмены.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+  logger.info('strategy_state - {0} for text in publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
+
   return FINISH
 
 def finish(bot, update):

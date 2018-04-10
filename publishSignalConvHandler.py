@@ -17,9 +17,10 @@ PASSWORD, GETPHOTO, GETTEXT, FINISH = range(4)
 
 def publishSignal(bot, update):
   global signal_state
+  bot.send_message(chat_id=update.message.chat_id, text="Введите, пожалуйста, пароль:")
   logger.info('publishSignal starts for chat_id {0}'.format(update.message.chat_id))
   logger.info('Initial signal_state - {0} in publishSignal for chat_id {1}'.format(signal_state, update.message.chat_id))
-  bot.send_message(chat_id=update.message.chat_id, text="Введите, пожалуйста, пароль:")
+
   return PASSWORD
  
 def password(bot, update):
@@ -28,17 +29,18 @@ def password(bot, update):
 
 def photo(bot, update):
   global signal_state
-  logger.info('signal_state - {0} for photo in publishSignal for chat_id {1}'.format(signal_state, update.message.chat_id))
   signal_state["photoId_for_{0}".format(update.message.chat_id)] = update.message.photo[-1].file_id
 
   bot.send_message(chat_id=update.message.chat_id, text="Введите текст для публикации:")
+  logger.info('signal_state - {0} for photo in publishSignal for chat_id {1}'.format(signal_state, update.message.chat_id))
   return GETTEXT
 
 def text(bot, update):
   global signal_state
-  logger.info('signal_state - {0} for text in publishSignal for chat_id {1}'.format(signal_state, update.message.chat_id))
   signal_state["text_for_{0}".format(update.message.chat_id)] = update.message.text
   bot.send_message(chat_id=update.message.chat_id, text="Введите /finish для завершения и публикации ли /cancel для отмены.")
+  logger.info('signal_state - {0} for text in publishSignal for chat_id {1}'.format(signal_state, update.message.chat_id))
+
   return FINISH
 
 def finish(bot, update):

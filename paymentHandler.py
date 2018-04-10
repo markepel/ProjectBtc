@@ -30,7 +30,7 @@ def handlePayment(invoiceData):
         amountHadToBePaid = strategyThatWasBought.price
         rightAwayLinkText = Texts.getRightAwayLinkText(strategyThatWasBought.name, strategyThatWasBought.rightAwayLink) 
         if int(float(amount)) >= int(float(amountHadToBePaid)):
-          print('Adding subscription to strategy')
+          logger.info('Adding subscription to strategy')
           db.add_subscription_for_strategy(invoiceForData['chatId'], invoiceForData['strategyId'])
           messageToSend = Texts.getTextForSubscriptionForStrategy(strategyThatWasBought.name)
           everythingIsFine = True
@@ -39,7 +39,7 @@ def handlePayment(invoiceData):
 
       else: 
         if int(float(amount)) >= int(float(config.SUBSCRIPTIONFORSIGNALSPRICE)):
-          print('Adding subscription to signals'.format(status))
+          logger.info('Adding subscription to signals'.format(status))
           db.add_subscription_for_signals(invoiceForData['chatId'])
           messageToSend = Texts.getTextForSubscriptionForSignals()
           everythingIsFine = True
@@ -57,8 +57,8 @@ def handlePayment(invoiceData):
       sendResultMessagesToUser(invoiceForData['chatId'], messageToSend, everythingIsFine, strategyWasBought(invoiceForData), rightAwayLinkText)
   else:
     messageToSend = "Оплата недействительна. Обратитесь в службу поддержки."
-    print("AAAAAAAAAAA invoiceForData['chatId'] = {0}".format(invoiceForData['chatId']))
-    print("BBBBBBBBBBB type of it = {0}".format(type(invoiceForData['chatId'])))
+    logger.info("AAAAAAAAAAA invoiceForData['chatId'] = {0}".format(invoiceForData['chatId']))
+    logger.info("BBBBBBBBBBB type of it = {0}".format(type(invoiceForData['chatId'])))
 
     bot.send_message(chat_id=invoiceForData['chatId'], text=messageToSend, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
 
@@ -67,9 +67,9 @@ def checkPaymentValidity(i):
     , i['invoice_created'], i['invoice_expires'], i['invoice_amount'], i['invoice_currency'], i['invoice_status']
     , i['invoice_url'], i['order_id'], i['checkout_address'], i['checkout_amount'], i['checkout_currency'], i['date_time']
     , config.SECRET).encode('utf-8')
-  print('stringToCheck = {0}'.format(stringToCheck))
+  logger.info('stringToCheck = {0}'.format(stringToCheck))
   paymentHash = hashlib.sha1(stringToCheck).hexdigest()
-  print('paymentHash = {0}'.format(paymentHash))
+  logger.info('paymentHash = {0}'.format(paymentHash))
   return i['secret_hash'] == paymentHash
 
 def getInvoiceForData(orderInfo):
@@ -85,11 +85,11 @@ def strategyWasBought(invoiceForData):
 
 def handleCardPayment(invoiceData):
   logger.info("handleCardPayment method, invoice data = {0}".format(invoiceData))
-  print('invoiceDataCARD = {0}'.format(invoiceData))
+  logger.info('invoiceDataCARD = {0}'.format(invoiceData))
   amount = invoiceData['withdraw_amount']
-  print('amountCARD = {0}'.format(invoiceData))
+  logger.info('amountCARD = {0}'.format(invoiceData))
   invoiceForData = getInvoiceForData(invoiceData['label'])
-  print('invoiceForDataCARD = {0}'.format(invoiceForData))
+  logger.info('invoiceForDataCARD = {0}'.format(invoiceForData))
   messageToSend = ""
   paymentIsValid = checkCardPaymentValidity(invoiceData)
   everythingIsFine = False
@@ -102,11 +102,11 @@ def handleCardPayment(invoiceData):
       rightAwayLinkText = Texts.getRightAwayLinkText(strategyThatWasBought.name, strategyThatWasBought.rightAwayLink) 
       amountHadToBePaid = strategyThatWasBought.price
       if int(float(amount)) >= int(float(amountHadToBePaid)):
-        print('Adding subscription to strategy')
+        logger.info('Adding subscription to strategy')
         db.add_subscription_for_strategy(invoiceForData['chatId'], invoiceForData['strategyId'])
         messageToSend = Texts.getTextForSubscriptionForStrategy(strategyThatWasBought.name)
         everythingIsFine = True
-        print('everythingIsFine = {0}'.format(everythingIsFine))
+        logger.info('everythingIsFine = {0}'.format(everythingIsFine))
       else:
         messageToSend = "Сумма оплаты меньше суммы заказа. Стоимость - {0}, оплачено - {1}. Обратитесь в службу поддержки.".format(amountHadToBePaid, amount)
 
@@ -114,7 +114,7 @@ def handleCardPayment(invoiceData):
       if int(float(amount)) >= int(float(config.SUBSCRIPTIONFORSIGNALSPRICE)):
         db.add_subscription_for_signals(invoiceForData['chatId'])
         messageToSend = Texts.getTextForSubscriptionForSignals()
-        print('everythingIsFine2 = {0}'.format(everythingIsFine))
+        logger.info('everythingIsFine2 = {0}'.format(everythingIsFine))
         everythingIsFine = True
 
       else:
@@ -130,8 +130,8 @@ def checkCardPaymentValidity(i):
     , i['amount'], i['currency'], i['datetime'], i['sender'], i['codepro']
     , config.YSECRET, i['label']).encode('utf-8')
   paymentHash = hashlib.sha1(stringToCheck).hexdigest()
-  print('AAAAAAAAAAA i["sha1_hash"]  = {0}'.format(i['sha1_hash'] ))
-  print('BBBBBBBBBBB paymentHash = {0}'.format(paymentHash))
+  logger.info('AAAAAAAAAAA i["sha1_hash"]  = {0}'.format(i['sha1_hash'] ))
+  logger.info('BBBBBBBBBBB paymentHash = {0}'.format(paymentHash))
 
   if(i['sha1_hash'] == paymentHash and i['codepro'] != 'false'):
     return i['sha1_hash'] == paymentHash

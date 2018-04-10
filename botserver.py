@@ -52,7 +52,7 @@ def invoice():
   try:
     invoice = request.form.to_dict(flat=True)
     handlePayment(invoice)
-    print('----Invoice-----', request.form)
+    logger.info('----Invoice-----', request.form)
   except Exception as e:
     logger.error("An error occured handling invoice when request was - \n {0}".format(request.form))  
     logger.exception(e)
@@ -64,7 +64,7 @@ def cardInvoice():
   try:
     invoice = request.form.to_dict(flat=True)
     handleCardPayment(invoice)
-    print('----Card Invoice-----', request.form)
+    logger.info('----Card Invoice-----', request.form)
   except Exception as e:
     logger.error("An error occured handling card invoice when request was - \n {0}".format(request.form))  
     logger.exception(e)

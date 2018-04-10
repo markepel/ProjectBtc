@@ -23,9 +23,10 @@ def email(bot, update):
  
 def sendEmail(bot, update):
   try:
-    sendEmail(update.message.text + '\n chat_id = {0}'.format(update.message.chat_id))
+    messageText = update.message.text + '\n chat_id = {0}'.format(update.message.chat_id)
+    sendEmail(messageText)
     bot.send_message(chat_id=update.message.chat_id, text="Ваше обращение принято к рассмотрению.", reply_markup = ReplyKeyboardMarkup(reply_keyboard_main_menu))
-    logger.info('Chat id = {0} successfully finished his support request'.format(update.message.chat_id))
+    logger.info('Chat id = {0} successfully finished his support request. Request - '.format(update.message.chat_id, messageText))
   except Exception as e:
     logger.exception(e)
   finally:
