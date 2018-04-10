@@ -133,7 +133,7 @@ def checkCardPaymentValidity(i):
   logger.info('AAAAAAAAAAA i["sha1_hash"]  = {0}'.format(i['sha1_hash'] ))
   logger.info('BBBBBBBBBBB paymentHash = {0}'.format(paymentHash))
 
-  if(i['sha1_hash'] == paymentHash and i['codepro'] != 'false'):
+  if(i['sha1_hash'] == paymentHash and i['codepro'] == 'false'):
     return i['sha1_hash'] == paymentHash
 
 def sendResultMessagesToUser(chatId, message, everythingIsFine, strategyWasBought, rightAwayLinkText):

@@ -141,17 +141,31 @@ def paymentCheck(bot, update):
 
 def cardPaymentCheck(bot, update):
   inputInvoiceData = ImmutableMultiDict([
-  ('sha1_hash', '1e632a5759cc47975844cc33e33d2459e1799b3e'), 
-  ('datetime', '2018-03-29T13:16:50Z'), 
-  ('notification_type', 'p2p-incoming'), 
-  ('currency', '643'), 
-  ('amount', '350.61'),
-  ('operation_id', 'test-notification'), 
-  ('codepro', 'false'), 
-  ('operation_label', ''), 
-  ('label', 'cid_111384340_stid_2'), 
-  ('test_notification', 'true'), 
-  ('sender', '41001000040')])
+    ('building', ''), 
+    ('suite', ''), 
+    ('flat', ''), 
+    ('unaccepted', 'false'), 
+    ('fathersname', ''), 
+    ('lastname', ''), 
+    ('sender', ''), 
+    ('zip', ''), 
+    ('phone', ''), 
+    ('firstname', ''), 
+    ('notification_type', 'card-incoming'), 
+    ('operation_id', '576692812779008012'), 
+    ('sha1_hash', '6ace7f01cc6786a4d9b8ef457705373fcc701cd5'), 
+    ('street', ''), 
+    ('label', 'cid_209017109'), 
+    ('withdraw_amount', '4500.00'), 
+    ('codepro', 'false'), 
+    ('datetime', '2018-04-10T16:26:52Z'), 
+    ('currency', '643'), 
+    ('email', ''), 
+    ('operation_label', '225ef96f-0002-5000-8036-1f09d186e844'), 
+    ('amount', '4410.00'), 
+    ('city', '')
+    ])
+
   fakeInvoice = inputInvoiceData.to_dict(flat=True)
   handleCardPayment(fakeInvoice)
 
