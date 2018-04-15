@@ -33,7 +33,7 @@ logger = logging.getLogger('btcLogger')
 
 def start(bot, update):
   try:
-    logger.info('New START!!!, new chat_id = {0}, from_user.id {1}'.format(str(update.message.chat_id), str(update.message.from_user.id))
+    logger.info('New START!!!, new chat_id = {0}, from_user.id {1}'.format(str(update.message.chat_id), str(update.message.from_user.id)))
     bot.send_message(chat_id=update.message.chat_id, text=Texts.getTextOnStart(update.message.from_user.first_name), reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
     db = DBRepo()
     db.add_user(update.message.from_user.id, update.message.from_user.first_name)  
@@ -46,7 +46,7 @@ def start(bot, update):
 
 def profile(bot, update):
   try:
-    logger.info('Getting profile for chat_id = {0}'.format(str(update.message.chat_id)update.message.chat_id)))
+    logger.info('Getting profile for chat_id = {0}'.format(str(update.message.chat_id)))
     db = DBRepo()
     activeStrategySubscriptions = db.get_active_subscriptions_for_strategies_by_user_id(int(update.message.chat_id))
     signalsSubscriptionsDb = db.get_active_subscriptions_for_signals_by_user_id(int(update.message.chat_id))
