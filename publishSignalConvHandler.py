@@ -18,8 +18,8 @@ PASSWORD, GETPHOTO, GETTEXT, FINISH = range(4)
 def publishSignal(bot, update):
   global signal_state
   bot.send_message(chat_id=update.message.chat_id, text="Введите, пожалуйста, пароль:")
-  logger.info('publishSignal starts for chat_id {0}'.format(update.message.chat_id))
-  logger.info('Initial signal_state - {0} in publishSignal for chat_id {1}'.format(signal_state, update.message.chat_id))
+  logger.info('publishSignal starts for chat_id {0}'.format(str(update.message.chat_id)))
+  logger.info('Initial signal_state - {0} in publishSignal for chat_id {1}'.format(str(signal_state), str(update.message.chat_id)))
 
   return PASSWORD
  
@@ -29,32 +29,32 @@ def password(bot, update):
 
 def photo(bot, update):
   global signal_state
-  signal_state["photoId_for_{0}".format(update.message.chat_id)] = update.message.photo[-1].file_id
+  signal_state["photoId_for_{0}".format(str(update.message.chat_id))] = update.message.photo[-1].file_id
 
   bot.send_message(chat_id=update.message.chat_id, text="Введите текст для публикации:")
-  logger.info('signal_state - {0} for photo in publishSignal for chat_id {1}'.format(signal_state, update.message.chat_id))
+  logger.info('signal_state - {0} for photo in publishSignal for chat_id {1}'.format(str(signal_state), str(update.message.chat_id)))
   return GETTEXT
 
 def text(bot, update):
   global signal_state
-  signal_state["text_for_{0}".format(update.message.chat_id)] = update.message.text
+  signal_state["text_for_{0}".format(str(update.message.chat_id))] = update.message.text
   bot.send_message(chat_id=update.message.chat_id, text="Введите /finish для завершения и публикации ли /cancel для отмены.")
-  logger.info('signal_state - {0} for text in publishSignal for chat_id {1}'.format(signal_state, update.message.chat_id))
+  logger.info('signal_state - {0} for text in publishSignal for chat_id {1}'.format(str(signal_state), str(update.message.chat_id)))
 
   return FINISH
 
 def finish(bot, update):
   try:
     chatId = update.message.chat_id
-    logger.info('publishSignal finish starts for chat_id {0}'.format(chatId))
+    logger.info('publishSignal finish starts for chat_id {0}'.format(str(chatId)))
     db = DBRepo()
     idsToPublishBig = db.get_all_active_subscriptions_ids_for_signals()
     logger.info('idsToPublishBig - {0}'.format(idsToPublishBig))
     global signal_state
-    logger.info('signal_state - {0} on finish in publishSignal for chat_id {1}'.format(signal_state, update.message.chat_id))
+    logger.info('signal_state - {0} on finish in publishSignal for chat_id {1}'.format(str(signal_state), (update.message.chat_id)))
     text = """Сигнал:
-{0}""".format(signal_state["text_for_{0}".format(chatId)])
-    photoId = signal_state["photoId_for_{0}".format(chatId)]
+{0}""".format(signal_state["text_for_{0}".format(str(chatId))])
+    photoId = signal_state["photoId_for_{0}".format(str(chatId))]
     for idsToPublish in idsToPublishBig:
       try:  
         id = idsToPublish[0]
@@ -63,10 +63,10 @@ def finish(bot, update):
       except Exception as e:
         logger.exception(e)
     bot.send_message(chat_id=chatId, text="Сигнал разослан подписантам.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
-    logger.info('publishSignal finished successfully for chat_id {0}. Signal - {1}'.format(chatId, signal_state["text_for_{0}".format(chatId)]))
-    del signal_state["text_for_{0}".format(update.message.chat_id)]
-    del signal_state["photoId_for_{0}".format(update.message.chat_id)]
-    logger.info('signal_state - {0} for after finish in publishSignal for chat_id {1}'.format(signal_state, update.message.chat_id))
+    logger.info('publishSignal finished successfully for chat_id {0}. Signal - {1}'.format(str(chatId), signal_state["text_for_{0}".format(str(chatId))]))
+    del signal_state["text_for_{0}".format(str(update.message.chat_id))]
+    del signal_state["photoId_for_{0}".format(str(update.message.chat_id))]
+    logger.info('signal_state - {0} for after finish in publishSignal for chat_id {1}'.format(str(signal_state), str(update.message.chat_id)))
   except Exception as e:
     logger.exception(e)
   finally:
@@ -75,12 +75,12 @@ def finish(bot, update):
 def cancel(bot, update):
   bot.send_message(chat_id=update.message.chat_id, text="Отмена публикации", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
   global signal_state
-  logger.info('signal_state - {0} on cancel in publishSignal for chat_id {1}'.format(signal_state, update.message.chat_id))
-  if "text_for_{0}".format(update.message.chat_id) in signal_state:
-    del signal_state["text_for_{0}".format(update.message.chat_id)]
-  if "photoId_for_{0}".format(update.message.chat_id) in signal_state:
-    del signal_state["photoId_for_{0}".format(update.message.chat_id)]
-  logger.info('signal_state - {0} after cancel in publishSignal for chat_id {1}'.format(signal_state, update.message.chat_id))
+  logger.info('signal_state - {0} on cancel in publishSignal for chat_id {1}'.format(str(signal_state), str(update.message.chat_id)))
+  if "text_for_{0}".format(str(update.message.chat_id)) in signal_state:
+    del signal_state["text_for_{0}".format(str(update.message.chat_id))]
+  if "photoId_for_{0}".format(str(update.message.chat_id)) in signal_state:
+    del signal_state["photoId_for_{0}".format(str(update.message.chat_id))]
+  logger.info('signal_state - {0} after cancel in publishSignal for chat_id {1}'.format(str(signal_state), str(update.message.chat_id)))
 
   return ConversationHandler.END
 

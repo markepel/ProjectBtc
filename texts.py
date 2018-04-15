@@ -129,7 +129,6 @@ class Texts:
 
   @staticmethod
   def getTextForProfile(strategyNamesAndExpireDatesDict, isSubscribedOnSignalsAndExpireDateDict):
-    print('isSubscribedOnSignalsAndExpireDateDict - ', isSubscribedOnSignalsAndExpireDateDict)
     strategiesText = "<b>Стратегии:</b>\n"
     if not strategyNamesAndExpireDatesDict:
       strategiesText += "Нет изучаемых стратегий."
@@ -202,7 +201,7 @@ Market: Bittrex
 
 Стоимость подписки {0} ₽
 <b>Присоединяйтесь! И успешной торговли, друзья!</b>
-""".format(config.SUBSCRIPTIONFORSIGNALSPRICE)
+""".format(str(config.SUBSCRIPTIONFORSIGNALSPRICE))
 
   @staticmethod
   def generateRegexForStrategies(strategyNames):

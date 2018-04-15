@@ -17,17 +17,17 @@ SENDEMAIL = range(1)
 
 def email(bot, update):
   keyboard = [['Отменить обращение']]
-  logger.info('Someone starts writing to support. Chat id = {0}'.format(update.message.chat.id))
+  logger.info('Someone starts writing to support. Chat id = {0}'.format(str(update.message.chat.id)))
   bot.send_message(chat_id=update.message.chat.id, text="Введите ваше обращение. Если вы хотите получить ответ не в боте, а по email, укажите его адрес в теле обращения, пожалуйста. Конечно, вы всегда можете отправить его вручную на {0}.".format(config.EMAILTO), reply_markup = ReplyKeyboardMarkup(keyboard))
   return SENDEMAIL
  
 def sendEmail(bot, update):
   try:
     messageText = """{0} 
-chat_id = {1}""".format(update.message.text , update.message.chat_id)
+chat_id = {1}""".format(update.message.text , str(update.message.chat_id))
     sendEmail(messageText)
     bot.send_message(chat_id=update.message.chat_id, text="Ваше обращение принято к рассмотрению.", reply_markup = ReplyKeyboardMarkup(reply_keyboard_main_menu))
-    logger.info('Chat id = {0} successfully finished his support request. Request - {1}'.format(update.message.chat_id, messageText))
+    logger.info('Chat id = {0} successfully finished his support request. Request - {1}'.format(str(update.message.chat_id), messageText))
   except Exception as e:
     logger.exception(e)
   finally:
@@ -35,7 +35,7 @@ chat_id = {1}""".format(update.message.text , update.message.chat_id)
 
 def cancel(bot, update):
   bot.send_message(chat_id=update.message.chat_id, text="Обращение в службу поддержки отменено.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True))
-  logger.info('Cancel Chat id = {0} canceled his support request'.format(update.message.chat_id))
+  logger.info('Cancel Chat id = {0} canceled his support request'.format(str(update.message.chat_id)))
 
   return ConversationHandler.END
 

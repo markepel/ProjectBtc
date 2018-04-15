@@ -23,9 +23,9 @@ logger = logging.getLogger('btcLogger')
 PASSWORD, CHOOSESTRATEGY, GETPHOTO, GETTEXT, FINISH = range(5)
 
 def publishStrategy(bot, update):
-  logger.info('publishStrategy starts for chat_id {0}'.format(update.message.chat_id))
+  logger.info('publishStrategy starts for chat_id {0}'.format(str(update.message.chat_id)))
   global strategy_state
-  logger.info('Initial strategy_state - {0} for publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
+  logger.info('Initial strategy_state - {0} for publishstrategy for chat_id {1}'.format(str(strategy_state), str(update.message.chat_id)))
   bot.send_message(chat_id=update.message.chat_id, text="Введите, пожалуйста, пароль:")
   return PASSWORD
  
@@ -37,35 +37,35 @@ def name(bot, update):
   publishStrategyInfo = PublishStrategyInfo()
   publishStrategyInfo.setStrategyName(update.message.text) 
   global strategy_state
-  strategy_state[update.message.chat_id] = publishStrategyInfo
+  strategy_state[str(update.message.chat_id)] = publishStrategyInfo
   bot.send_message(chat_id=update.message.chat_id, text="Картинка для публикации:", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
-  logger.info('strategy_state - {0} for name in publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
+  logger.info('strategy_state - {0} for name in publishstrategy for chat_id {1}'.format(str(strategy_state), str(update.message.chat_id)))
 
   return GETPHOTO
 
 def photo(bot, update):
   global strategy_state
-  strategy_state[update.message.chat_id].setPhotoId(update.message.photo[-1].file_id)
+  strategy_state[str(update.message.chat_id)].setPhotoId(update.message.photo[-1].file_id)
 
   bot.send_message(chat_id=update.message.chat_id, text="Введите текст для публикации:", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
-  logger.info('strategy_state - {0} for photo in publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
+  logger.info('strategy_state - {0} for photo in publishstrategy for chat_id {1}'.format(str(strategy_state), str(update.message.chat_id)))
   return GETTEXT
 
 def text(bot, update):
   global strategy_state
-  strategy_state[update.message.chat_id].setText(update.message.text)
+  strategy_state[str(update.message.chat_id)].setText(update.message.text)
   bot.send_message(chat_id=update.message.chat_id, text="Введите /finish для завершения и публикации ли /cancel для отмены.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
-  logger.info('strategy_state - {0} for text in publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
+  logger.info('strategy_state - {0} for text in publishstrategy for chat_id {1}'.format(str(strategy_state), str(update.message.chat_id)))
 
   return FINISH
 
 def finish(bot, update):
   try:
-    logger.info('publishStrategy finish starts for chat_id {0}'.format(update.message.chat_id))
+    logger.info('publishStrategy finish starts for chat_id {0}'.format(str(update.message.chat_id)))
     db = DBRepo()
     global strategy_state
-    logger.info('strategy_state - {0} for finish in publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
-    strategyName = strategy_state[update.message.chat_id].strategyName
+    logger.info('strategy_state - {0} for finish in publishstrategy for chat_id {1}'.format(str(strategy_state), str(update.message.chat_id)))
+    strategyName = strategy_state[str(update.message.chat_id)].strategyName
     idsToPublishBig = db.get_active_subscribers_ids_for_strategy_by_name(strategyName)
     logger.info('idsToPublishBig - {0}'.format(idsToPublishBig))
     for idsToPublish in idsToPublishBig:
@@ -73,18 +73,18 @@ def finish(bot, update):
         try:
           text = """
           <b>Урок стратегии "{1}":</b>
-{0}""".format(strategy_state[update.message.chat_id].text, strategyName)
-          bot.send_photo(chat_id=id, photo=strategy_state[update.message.chat_id].photoId, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
+{0}""".format(strategy_state[str(update.message.chat_id)].text, strategyName)
+          bot.send_photo(chat_id=id, photo=strategy_state[str(update.message.chat_id)].photoId, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
           bot.send_message(chat_id=id, text=text, reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
           time.sleep(0.04)
         except Exception as e:
           logger.exception(e)
-    logger.info('strategy_state - {0} in the end in publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
+    logger.info('strategy_state - {0} in the end in publishstrategy for chat_id {1}'.format(str(strategy_state), str(update.message.chat_id)))
 
     bot.send_message(chat_id=update.message.chat_id, text="Публикация стратегии разослана подписантам.", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
-    logger.info('publishStrategy finished successfully for chat_id {0}. Strategy = {1}'.format(update.message.chat_id, strategy_state[update.message.chat_id]))
-    del strategy_state[update.message.chat_id]
-    logger.info('strategy_state - {0} for after finish in publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
+    logger.info('publishStrategy finished successfully for chat_id {0}. Strategy = {1}'.format(str(update.message.chat_id), str(strategy_state[update.message.chat_id])))
+    del strategy_state[str(update.message.chat_id)]
+    logger.info('strategy_state - {0} for after finish in publishstrategy for chat_id {1}'.format(str(strategy_state), str(update.message.chat_id)))
   except Exception as e:
     logger.exception(e)
   finally:
@@ -92,11 +92,11 @@ def finish(bot, update):
 
 def cancel(bot, update):
   global strategy_state
-  logger.info('strategy_state - {0} on cancel in publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
+  logger.info('strategy_state - {0} on cancel in publishstrategy for chat_id {1}'.format(str(strategy_state), str(update.message.chat_id)))
   bot.send_message(chat_id=update.message.chat_id, text="Отмена публикации", reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True), parse_mode=telegram.ParseMode.HTML)
-  if update.message.chat_id in signal_state:
-    del strategy_state[update.message.chat_id]
-  logger.info('strategy_state - {0} after cancel in publishstrategy for chat_id {1}'.format(strategy_state, update.message.chat_id))
+  if ustr(update.message.chat_id) in signal_state:
+    del strategy_state[str(update.message.chat_id)]
+  logger.info('strategy_state - {0} after cancel in publishstrategy for chat_id {1}'.format(str(strategy_state), str(update.message.chat_id)))
   return ConversationHandler.END
 
 publishstrategy_conv_handler = ConversationHandler(

@@ -34,7 +34,7 @@ app = Flask(__name__)
  
 @app.errorhandler(Exception)
 def handle_error(e):
-  logger.error("Error itself = \n {0}".format(e).encode('utf-8'))
+  logger.error("Error itself = \n {0}".format(str(e)).encode('utf-8'))
 
 @app.route("/", methods=["POST", "GET"])
 def webhook():
@@ -54,7 +54,7 @@ def invoice():
     handlePayment(invoice)
     logger.info('----Invoice-----', request.form)
   except Exception as e:
-    logger.error("An error occured handling invoice when request was - \n {0}".format(request.form))  
+    logger.error("An error occured handling invoice when request was - \n {0}".format(str(request.form))) 
     logger.exception(e)
   finally:
     return ''
@@ -66,7 +66,7 @@ def cardInvoice():
     handleCardPayment(invoice)
     logger.info('----Card Invoice-----', request.form)
   except Exception as e:
-    logger.error("An error occured handling card invoice when request was - \n {0}".format(request.form))  
+    logger.error("An error occured handling card invoice when request was - \n {0}".format(str(request.form)))
     logger.exception(e)
   finally:
     return ''
