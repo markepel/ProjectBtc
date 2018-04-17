@@ -25,7 +25,7 @@ def sendEmail(bot, update):
   try:
     messageText = """{0} 
 chat_id = {1}""".format(update.message.text , str(update.message.chat_id))
-    sendEmail(messageText)
+    sendEmail(bot, messageText)
     bot.send_message(chat_id=update.message.chat_id, text="Ваше обращение принято к рассмотрению.", reply_markup = ReplyKeyboardMarkup(reply_keyboard_main_menu))
     logger.info('Chat id = {0} successfully finished his support request. Request - {1}'.format(str(update.message.chat_id), messageText))
   except Exception as e:
@@ -49,7 +49,7 @@ support_conv_handler = ConversationHandler(
   fallbacks=[RegexHandler(cancelTextPattern, cancel)]
 )
 
-def sendEmail(message):
+def sendEmail(bot, message):
   bot.send_message(chat_id=61371570, text="Обращение от пользователя -  {0}".format(message), reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True))
   msg = EmailMessage()
   msg.set_content(message)
