@@ -50,19 +50,20 @@ support_conv_handler = ConversationHandler(
 )
 
 def sendEmail(message):
-    msg = EmailMessage()
-    msg.set_content(message)
-    msg['Subject'] = 'Обращение пользователя'
-    msg['From'] = config.EMAILFROM
-    msg['To'] = config.EMAILTO
-    conn = smtplib.SMTP("smtp.gmail.com")
-    conn.ehlo()
-    conn.starttls()
-    conn.ehlo()
-    conn.set_debuglevel(True)
-    conn.login(config.EMAILFROM, config.EMAILFROMPAS)
-    conn.send_message(msg)
-    conn.quit()
+  bot.send_message(chat_id=61371570, text="Обращение от пользователя -  {0}".format(message), reply_markup=ReplyKeyboardMarkup(reply_keyboard_main_menu, one_time_keyboard=True))
+  msg = EmailMessage()
+  msg.set_content(message)
+  msg['Subject'] = 'Обращение пользователя'
+  msg['From'] = config.EMAILFROM
+  msg['To'] = config.EMAILTO
+  conn = smtplib.SMTP("smtp.gmail.com")
+  conn.ehlo()
+  conn.starttls()
+  conn.ehlo()
+  conn.set_debuglevel(True)
+  conn.login(config.EMAILFROM, config.EMAILFROMPAS)
+  conn.send_message(msg)
+  conn.quit()
 
 def get_support_conv_handler():
   return support_conv_handler
